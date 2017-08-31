@@ -1,0 +1,409 @@
+\section{Methods} \label{ch:lfs:lfs_method}
+In this section, we will investigate different approaches that capture the user behavior of providing ratings on sets. We will describe various methods that use the set ratings alone or in combination with individual item ratings towards solving two problems: (i) predict a rating for a set of items, and (ii) predict a rating for individual items.  
+Our methods solve these problems in a coupled fashion by estimating models for predicting the ratings that users will provide to the individual items and by estimating models that use these item-level ratings to derive set-level ratings.
+
+
+
+\iffalse
+In this section, we describe various methods that use the set ratings alone
+or in combination with individual item ratings towards solving two
+problems: (i) predict a rating for a set of items, and (ii)
+predict a rating for individual items. 
+Our methods solve these problems in a coupled fashion by estimating
+models for predicting the ratings that users will provide to the individual
+items and by estimating models that use these item-level ratings to derive
+set-level ratings.
+\fi
+
+
+\subsection{Modeling users' ratings on sets}
+In order to estimate the preferences on individual items from the preferences on the sets, we need to make some assumptions on how a user derives a set-level
+rating from the ratings of the set's constituent items.
+Informed by our analysis of the data described in Section~\ref{ch:lfs:dataset}, we
+investigated three approaches of modeling that.
+
+
+
+%========================================================
+\subsubsection*{Average Rating Model (ARM)}
+The first approach assumes that the rating that a user provides
+on a set reflects his/her average rating on all the items in the
+set. Specifically, if the rating of user $u$ on set $\mathcal{S}$ is denoted by $r_{u}^s$,
+then the estimated rating of user $u$ on set $\mathcal{S}$ is given by
+\begin{equation} \label{avgSetEq}
+  \begin{split}
+    \hat{r}_{u}^s &= \frac{1}{|\mathcal{S}|} \sum_{i \in \mathcal{S}} r_{ui}.
+  \end{split}
+\end{equation}
+\noindent As the analysis in Section~\ref{ch:lfs:dataset} showed, such a model correlates well
+with the actual ratings that the users provided on majority of the sets,
+especially when the ratings of the constituent items are not very different.
+
+
+\iffalse
+Since we do not know the user's original item-level ratings, we use the user's
+estimated ratings instead. That is,
+\begin{equation} \label{avgSetEstEq}
+  \begin{split}
+    \hat{r}_{u}^s &= \frac{1}{|S|} \sum_{i \in \mathcal{S}} \hat{r}_{ui}.
+  \end{split}
+\end{equation}
+\fi
+   
+%========================================================
+
+%TODO: In order to capture this user-specific %\emph{pickiness}, we investigated two approaches. Mention that following two approaches are designed for modeling user-specific pickiness.
+
+\subsubsection*{Extremal Subset Average Rating Model (ESARM)}
+In order to capture the user-specific \emph{pickiness} illustrated in Section~\ref{ch:lfs:data_analysis}, this approach postulates that a user rates a set by considering only a subset of the set's items. If a user tends to
+consistently under-rate each set, then that subset will contain some of each
+set's lowest-rated items. Analogously, if a
+user tends to consistently over-rate each set, then that subset will contain
+some of each set's highest-rated items.
+Moreover, this approach further postulates that given such subsets, the rating
+that a user will assign to the set as a
+whole will be the average of his/her ratings on the individual items of the
+subset. The parameter in this model that
+captures the level of a user's pickiness is the size of the subset and whether
+or not it will contain the least- or the
+highest-rated items. We will call these subsets having least- and highest- rated
+items as extremal subsets. The set rating of an extremely picky user will be
+determined by the average rating of one or two of
+the least rated items, whereas the set rating of a user that is not picky at all
+will be determined by the average rating of
+one or two of the highest rated items. 
+
+If $e_i$ denotes the average rating of items in $i$th extremal
+subset and $n_s$ denotes number of items in set $\mathcal{S}$, 
+then $\langle e_1, \ldots, e_{n_s}, \ldots, e_{2n_s - 1} \rangle$ represents
+the average rating on all the extremal subsets; for $1 \le i \le
+n_s$, $e_i$ is the average rating of $i$ least rated
+items, for $n_s \le i \le 2n_s - 1 $, $e_i$ is the average rating
+of the $2n_s - i$ highest rated items and $e_{n_s}$ is the average rating of all
+the items in the set. Then $\hat{r}_{u}^s$ is given by
+\begin{equation} \label{avgbuckacteq}
+  \begin{split}
+    \hat{r}_{u}^s &= \sum_{i=1}^{2n_s - 1} w_{u,i} e_{i},
+  \end{split}
+\end{equation}
+\noindent where $w_{u,i}$ is a non-negative weight of user $u$ on
+$i$th extremal subset and the weights sum to 1.
+The weight $w_{u,i}$ measures the influence of the items in $i$th extremal subset 
+towards estimating the user's rating on set $\mathcal{S}$.
+One of the weights corresponds to the extremal subset that is responsible for majority of the user's rating on set, and it is higher than others, i.e.,
+\begin{equation} \label{esqpmodel_eq}
+	\begin{aligned}  
+        & \sum_{i=1}^{2n_s - 1}w_{u,i}=1,  \\
+        & w_{u, j} < w_{u, j+1}, \forall j < k, \\
+        & w_{u, j+1} < w_{u, j}, \forall j \ge k, \\
+        & w_{u,k} > c,  c > 0, \\
+     \end{aligned}
+\end{equation}
+\noindent where $c$ is the minimum weight of the extremal subset having the
+    highest contribution towards the user's rating on set.
+
+
+Note that this model assume
+that the size of all the sets is the same, however it can be generalized to sets
+of different sizes by constructing the extremal subsets for fixed number
+of quantiles in a set.
+
+
+
+%========================================================
+\subsubsection*{Variance Offset Average Rating Model (VOARM)}
+This approach captures the user-specific \emph{pickiness} by assuming that a user rates a set by considering both the
+average rating of the items in the set
+and also the diversity of the set's items. In this model, the set's rating is
+determined as the sum of the average
+rating of the set's items and a quantity that depends on the sets diversity
+(e.g.,
+the standard deviation of the set's ratings) and the user's level of
+pickiness. 
+If a user is very picky, that quantity will be
+negative and large, resulting to the set being
+(severely) under-rated. On the other hand, if a user is not picky at all, that
+quantity will be positive and large, resulting to the 
+set being (severely) over-rated. 
+
+ 
+If $\beta_u$ denotes the pickiness level of user $u$,
+then the estimated rating on a set is given by
+\begin{equation} \label{varActEq}
+  \begin{split}
+    %\hat{r}_{u}^s &= \mu_{s} + \beta_u (\sigma_{s} + \epsilon),
+    \hat{r}_{u}^s &= \mu_{s} + \beta_u \sigma_{s},
+  \end{split}
+\end{equation}
+\noindent where $\mu_{s}$ and $\sigma_{s}$ are the mean and the standard
+deviation of the ratings of items in the set $\mathcal{S}$.  %and $\epsilon$ is a fixed constant in [0, 1]. 
+Both $\mu_{s}$ and $\sigma_{s}$ are given by 
+\begin{equation}
+  \mu_{s} = \frac{1}{|S|} \sum_{i \in \mathcal{S}} r_{ui},\;\;  
+  \sigma_{s} = \sqrt{\frac{1}{|S|} \sum_{i \in \mathcal{S}} (r_{ui} -\mu_{s})^2}.
+\end{equation}
+
+\iffalse
+\noindent since we do not know the original ratings of the items in the sets, we
+can estimate rating on the set as
+\begin{equation} \label{varEstEq}
+  \begin{split}
+    \hat{r}_{u}^s &= \hat{\mu}_{s} + \beta_u \hat{\sigma}_{s} ,
+  \end{split}
+\end{equation}
+\noindent where $\hat{\mu}_{s}$ is the mean and $\hat{\sigma}_{s}$ is the standard
+deviation of the estimated ratings of items in the set $s$.
+\fi
+
+%========================================================
+
+\subsection{Modeling user's ratings on items}
+In order to model a users' ratings on the items, similar to matrix
+factorization method~\cite{koren2009matrix},
+we assume that the underlying user-item rating matrix is low-rank, i.e., there is a low-dimensional latent space in which both the users
+and the items can be compared to each other. 
+The rating of user $u$ on item $i$ can be computed as an inner product of
+the user and the item latent factors in that latent space.
+Thus, the estimated
+rating of user $u$ on item $i$, i.e., $\hat{r}_{ui}$, is given by
+\begin{equation} \label{ratPred_eq}
+  \begin{split}
+    \hat{r}_{ui} = \bm{p_u}^T\bm{q_i},
+  \end{split}
+\end{equation}
+\noindent where $\bm{p_u} \in \mathbb{R}^f$  is the latent representation of user $u$,
+$\bm{q_i} \in \mathbb{R}^f$ is the latent representation of item $i$ and $f$ is the
+dimensionality of the underlying latent space.
+
+
+\subsection{Combining set and item models}
+
+
+Our goal is to estimate the item-level ratings by learning the user and item
+latent factors of Equation~\ref{ratPred_eq}; however, the ratings that we have available
+from the users are at the set-level. In order to use the available set-level
+ratings, we need to combine 
+Equation~\ref{ratPred_eq} with
+Equations~\ref{avgSetEq},~\ref{avgbuckacteq}~and~\ref{varActEq}. To solve the problem, we assume that the actual
+item-level ratings used in Equations~\ref{avgSetEq},~\ref{avgbuckacteq}~and~\ref{varActEq} correspond to the estimated ratings
+given by Equation~\ref{ratPred_eq}. Hence, the estimated set-level ratings in
+Equations~\ref{avgSetEq},~\ref{avgbuckacteq}~and~\ref{varActEq}
+are finally expressed in terms of the corresponding user and item latent
+factors.
+
+%pseudocode for algorithms
+\begin{algorithm}
+  \caption{Learn ARM}
+  \label{alg:alg-lfs-arm}
+  \begin{algorithmic}[1]
+    \Procedure{LearnARM}{}
+    \State $\eta \gets  \text{learning rate}$
+    \State $\lambda \gets \text{regularization parameter}$
+    \State $\mathcal{R}^s \gets \text{all users' ratings on sets}$  
+    \State $iter \gets 0$
+    \State Init $P$, $Q$ with random values $\in$ [0,1] 
+    \While {iter $<$ maxIter or error on validation set decreases}
+      \State $\mathcal{R}^s \gets \text{shuffle}(\mathcal{R}^s)$
+      \ForAll{$r_{u}^s \in \mathcal{R}^s$}
+        \State $\hat{r}_{u}^s \gets  \frac{1}{|\mathcal{S}|} \sum_{\substack{i
+        \in \mathcal{S}}} \bm{p}_u^T\bm{q}_i$ 
+        \State $e_{u}^s \gets (\hat{r}_{u}^s - r_{u}^s)$
+        \State $\bm{v}_k \in \mathbb{R}^k$  $\gets 0$
+        \For {each item $i \in s$ }
+        \State $\bm{v}_k \gets \bm{v}_k + \bm{q}_i$
+        \EndFor
+        \State $\bm{p}_u \gets \bm{p}_u - \eta(\frac{e_{u}^s}{|s|} \bm{v}_k +
+        \lambda \bm{p}_u)$ \Comment{Update user's latent representation}
+        \For {each item $i \in s$ }
+          \State $\bm{q}_i \gets \bm{q}_i - \eta(\frac{e_{u}^s}{|s|} \bm{p}_u +
+            \lambda \bm{q}_i)$ \Comment{Update item's latent representation} 
+        \EndFor
+      \EndFor
+      \State $iter \gets iter + 1$
+    \EndWhile
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+  \caption{Learn \ES}
+  \label{alg:alg-lfs-esarm}
+  \begin{algorithmic}[1]
+    \Procedure{Learn\ES}{}
+    \State $\eta \gets  \text{learning rate}$
+    \State $\lambda \gets \text{regularization parameter}$
+    \State $\mathcal{R}^s \gets \text{all users' ratings on sets}$  
+    \State $n_s \gets \text{number of items in set}$
+    \State $n_{es} \gets 2n_s - 1$ \Comment{number of possible extremal subsets}
+    \State $iter \gets 0$
+    \State Init $P$, $Q$ with random values $\in$ [0,1] 
+    \State Init $W$ with random values $\forall$ user $u \in U$, s.t.,
+    $\sum_{i=1}^{n_{es}}w_{u,i}=1$
+    
+    
+
+    \While {iter $<$ maxIter or error on validation set decreases}
+      \State $\mathcal{R}^s \gets \text{shuffle}(\mathcal{R}^s)$
+      \State 
+      \ForAll{$r_{u}^s \in \mathcal{R}^s$}
+        
+        \State $\hat{r}_{u}^s \gets 0$
+        \State $\mathcal{E}_s \gets \text{All possible extremal subsets
+        for set }\mathcal{S}$
+        \State         
+        \State $\nabla p_u \in \mathbb{R}^f \gets 0$ 
+        
+        \For {each subset $i \in \mathcal{E}_s$}
+          \State $\hat{e}_i \gets 0,\; q_{sum} \in \mathbb{R}^f \gets 0$
+          \For {each item $j \in i$}
+            \State $\hat{e}_i \gets \hat{e}_i + p_u^Tq_j, \; q_{sum} \gets q_{sum} + q_j$
+            %\State $q_{sum} \gets q_{sum} + q_j$
+          \EndFor
+          \State $\hat{e}_i \gets \frac{\hat{e}_i}{|i|},\; q_{sum} \gets \frac{q_{sum}}{|i|}$
+          %\State $q_{sum} \gets \frac{q_{sum}}{|i|}$
+          \State $\hat{r}_{u}^s \gets \hat{r}_{u}^s + w_{u,i}\hat{e}_i$
+          \State $\nabla p_u \gets \nabla p_u + w_{u,i}q_{sum}$
+        \EndFor
+        
+        \State $e_{u}^s \gets (\hat{r}_{u}^s - r_{u}^s)$
+        \State $\nabla p_u \gets 2e_{u}^s\nabla p_u +
+        2\lambda p_u$ \Comment{update user's latent representation}
+ 
+        \State $p_u \gets p_u - \eta \nabla p_u$
+        \State         
+        \State $\nabla q \gets 2e_u^s p_u$
+        \For {each subset $i \in \mathcal{E}_s$}
+          \For {each item $j \in i$}
+          \State $q_j \gets q_j - \eta (\frac{w_{u,i}{\nabla q} }{|i|} +
+            2\frac{\lambda}{n_s}q_j)$ \Comment{update items' latent representation} 
+          \EndFor  
+        \EndFor
+
+      \EndFor
+      
+      \State
+      \ForAll{$u \in U$}
+        \State \text{Update } $\bm{w}_u$ \text{ using constraint quadratic
+      programming as described} 
+        \State \text{in Section}~\ref{ch:lfs:model_learn}. 
+      \EndFor
+
+      \State
+      \State $iter \gets iter + 1$
+    \EndWhile
+
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+  \caption{Learn \VO}
+  \label{alg:alg-lfs-voarm}
+  \begin{algorithmic}[1]
+    \Procedure{Learn\VO}{}
+    \State $\eta \gets  \text{learning rate}$
+    \State $\lambda \gets \text{regularization parameter}$
+    \State $\mathcal{R}^s \gets \text{all users' ratings on sets}$  
+    \State $iter \gets 0$
+    \State Init $P$, $Q$ and $\beta$s with random values $\in$ [0,1]
+    \While {iter $<$ maxIter or error on validation set decreases}
+      \State $\mathcal{R}^s \gets \text{shuffle}(\mathcal{R}^s)$
+      \ForAll{$r_{u}^s \in \mathcal{R}^s$}
+        \State $\hat{\mu}_s \gets  \frac{1}{|\mathcal{S}|} \sum_{i \in \mathcal{S}} \bm{p}_u^T\bm{q}_i$ 
+        \State $\hat{\sigma}_s \gets  \epsilon + \sqrt{\frac{1}{|\mathcal{S}|} \sum_{i \in
+          \mathcal{S}}  (\bm{p}_u^T\bm{q}_i - \hat{\mu}_s)^2}$
+          \State $\hat{r}_u^s \gets \hat{\mu}_s + \beta_u \hat{\sigma}_s$
+
+        \State $e_{u}^s \gets (\hat{r}_{u}^s - r_{u}^s)$
+        
+
+        \State $\bm{q} \in \mathbb{R}^f$  $\gets 0, \;\bm{v} \in \mathbb{R}^f$  $\gets 0$
+        \For {each item $i \in \mathcal{S}$ }
+          \State $\bm{q} \gets \bm{q} + \bm{q}_i$
+          \State $\bm{v} \gets \bm{v} + (\bm{p}_u^T\bm{q}_i)\bm{q}_i$
+        \EndFor
+        \State $\nabla p_u \gets \frac{\bm{q}}{|\mathcal{S}|} 
+          + \frac{\beta_u \bm{v}}{\hat{\sigma_s}|\mathcal{S}|}
+          - \frac{\beta_u \mu_s \bm{q}}{\hat{\sigma_s} |\mathcal{S}|}$
+
+
+        \State $\nabla q \gets \frac{2e_{u}^s p_u}{\mathcal{S}}$
+        \For {each item $i \in \mathcal{S}$ }
+          \State $t \gets 1 + \frac{\beta_u p_u^Tq_i}{\hat{\sigma}_s} 
+            - \frac{\beta_u \mu_s}{\hat{\sigma}_s}  $
+            \State $q_i \gets q_i - \eta(t \nabla q + 2\lambda q_i)$
+            \Comment{Update item's latent representation}
+        \EndFor
+
+        \State $p_u \gets p_u - \eta(2 e_{u}^s \nabla p_u + 2 \lambda p_u )$
+        \Comment{Update user's latent representation}
+        
+        \State $\beta_u \gets \beta_u - \eta(2 e_{u}^s \hat{\sigma_s} +
+        2\lambda\beta_u)$ \Comment{Update $\beta_u$}
+
+      \EndFor
+      \State $iter \gets iter + 1$
+    \EndWhile
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
+
+
+\subsection{Model learning}\label{ch:lfs:model_learn}
+The parameters of the models that estimate item- and set-level ratings are the
+user and item latent vectors ($p_u$ and $q_i$), in the case of \ES method
+the users' weights on extremal subsets ($W$) and in the case of the \VO method
+the user's pickiness level ($\beta_u$). These parameters are estimated using the
+user-supplied set-level ratings by minimizing a square error loss function given
+by
+
+
+%
+\begin{equation} \label{eq_rmse}
+  \mathcal{L}_{rmse}(\Theta) \equiv \sum_{u \in U} \sum_{\substack{s \in
+  \mathcal{R}_{u}^s}} (\hat{r}_{u}^s(\Theta) - r_{u}^s)^2,
+\end{equation}
+%
+
+
+\noindent where $\Theta$ represents model parameters, $U$ represents all the users, $\mathcal{R}_{u}^s$ contains all the sets rated 
+by user $u$, $r_{u}^s$ is the original rating of user $u$ on set $\mathcal{S}$ 
+and $\hat{r}_{u}^s$ is the estimated rating of user $u$ on set $\mathcal{S}$.
+
+To control model complexity, we add regularization of the model parameters
+thereby leading to an optimization process of the following form
+
+%
+\begin{equation} \label{eq_obj}
+  \minimize_{\Theta} \mathcal{L}_{rmse}(\Theta)  + \lambda (||\Theta||^2),
+\end{equation}
+
+%
+\noindent where $\lambda$ is the regularization parameter. The L2-regularization is added to 
+reduce the model complexity thereby improving its generalizability. 
+This optimization problem can be solved by Stochastic Gradient Descent
+(SGD)~\cite{r22} algorithm. 
+
+
+Note that for the \ES model, we
+need to solve this optimization problem with linear and non-negative constraints
+on user weights $\bm{w_u}^T$. If we know the users' and the items' latent factors
+then the user weights can be determined by solving the Equation~\ref{eq_obj} as
+a constraint quadratic programming~\cite{boyd2004convex} for each user. 
+We can determine a user's weights by solving multiple quadratic programs, each
+corresponding to a different extremal subset having the highest weight, and
+selecting the solution that has lowest RMSE over the user's sets.
+Hence, for \ES we solve for $W$ and $\{\bm{p_u}, \bm{q_i}\}$ alternately at each SGD iteration. 
+In \ES, the minimum weight of the extremal subset having highest contribution towards
+ratings on sets, i.e., $c$, can be specified in the range [0,1].
+Also, in the \VO method 
+we add a fixed constant, i.e., $\epsilon$ in [0, 1], to computed $\sigma$ for robustness.
+Algorithms~\ref{alg:alg-lfs-arm},~\ref{alg:alg-lfs-esarm}~and~\ref{alg:alg-lfs-voarm}
+shows the steps used to learn the \ARM,
+\ES and \VO models, respectively.
+
+If we also have ratings for the individual items, then we can incorporate these
+ratings into model estimation by treating each item as a set of size one. 
+

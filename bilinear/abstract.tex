@@ -1,0 +1,17 @@
+Recommending new items to existing users has remained a challenging problem
+due to the absence of user's past preferences for these items.  
+The user personalized non-collaborative methods based on item features 
+can be used to address this item \emph{cold-start} problem. 
+These methods rely on similarities between the target item and user's previous preferred items. 
+While computing similarities based on item features, these
+methods overlook the interactions among the features of the items and 
+consider them independently. Modeling interactions among features can be helpful 
+as some features, when considered together, provide a stronger signal on the 
+relevance of an item when compared to case where features are considered independently. 
+In this work we introduce the \CFEXPB 
+(\CF), which learns a \emph{low-rank} user personalized \emph{bilinear} similarity model to
+generate \TOPN recommendation of new items. \CF model leverages all available
+information across users to model these interactions among features.
+Results on benchmark
+dataset shows that \CF can improve upon traditional linear collaborative methods for
+cold-start \TOPN item recommendation.

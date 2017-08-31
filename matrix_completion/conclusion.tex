@@ -1,0 +1,72 @@
+\section{Conclusion} \label{ch:matcomp:conclusion}
+
+
+In this work, we have investigated the performance of the matrix
+completion-based low-rank models for estimating the missing ratings
+in  user-item rating matrices having sparsity structure identical 
+to real datasets. We showed in
+Section~\ref{ch:matcomp:mf_accu} that the matrix completion-based methods because of the
+presence of skewed distribution of entries in rating matrices in real
+datasets fail to predict the missing entries accurately in the matrices. Also,
+we learned that the items with high frequency are predicted more accurately than
+the others. These findings imply that for a user, the unrated items which have more ratings 
+in the matrix and are predicted high for the user, will form a better set of recommendations 
+than the items with fewer ratings in the rating matrix.
+
+
+Further, we saw in Section~\ref{ch:matcomp:mf_rank} that the errors in predictions due to
+the skewed distribution of ratings in the user-item rating matrix 
+affect the ranking performance of the matrix-completion based methods.
+In particular, under the assumption that the rating that a user will provide to an item determines his
+ranking preference, our results indicate that the items predicted at the top by matrix completion-based
+methods miss a large number of true high rated items. In some datasets, the true
+high rated items are missing even in the top $50\%$ of the predicted items for
+the user.
+However, the items that are predicted at the top for a user but are absent from
+the true high rated items are present close to the true high rated items by the
+user. Therefore, the ranking based on the predicted ratings is not severely
+affected by false positives as it does not contain items that are significantly
+low rated.
+Additionally, we observed that the infrequent items, irrespective of whether 
+they are true high rated or true low rated, are predicted low by the matrix
+completion-based methods thereby appearing later in the ranking
+of the items for recommendations.
+
+We can further use these findings to improve existing matrix completion-based recommendation methods.
+Also, it will be interesting to investigate how 
+properties of ratings, e.g., diversity or frequency of the ratings, in the rating matrix
+affect the matrix completion-based recommendation methods.
+
+\iffalse
+Additionally, we observed that the infrequent items irrespective of 
+whether they are true high rated or true low rated are predicted low by the
+matrix completion-based methods.
+Since both the infrequent and the frequent items that are true low rated for
+a user are predicted low, the \TOPN item
+recommendations usually contain favorable items for the user.
+\fi
+
+\iffalse
+
+\fi
+
+\iffalse
+In this work, we have investigated the performance of the matrix
+completion-based low-rank models for estimating the missing ratings in real
+datasets and its impact on the item recommendations. 
+We showed in
+Section~\ref{mf_accu} that the matrix completion-based methods because of the
+presence of non-uniform randomly sampled entries in rating matrices in real
+datasets fail to predict the missing entries accurately in the matrices. Also,
+we learned that the items with high frequency are predicted more accurately than
+the others. These findings imply that for a user, the unrated items which have more ratings 
+in the matrix and are predicted high for the user, will form a better set of recommendations 
+than the items with fewer ratings in the rating matrix.
+
+
+
+We can further use these findings to improve existing matrix completion-based recommendation methods.
+Also similar to item frequency, it will be interesting to investigate how other
+properties of ratings, e.g., diversity of the ratings, in the rating matrix
+affect the matrix completion-based recommendation methods.
+\fi

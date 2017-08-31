@@ -1,0 +1,170 @@
+\section{Results and Discussion}\label{ch:tmf:exp_res}
+
+
+We evaluated the performance of \MF (MF) method and the proposed methods, i.e.,
+\TMF (TMF) and \TMF with Dropout (TMF + Dropout) on the real datasets presented in Table~\ref{table:ch:matcomp:datasets_table}. 
+
+
+\subsection{Performance for rating prediction on real datasets}
+We investigated the performance of the different methods for the task
+of rating predictions on different rating datasets. Table~\ref{table:drop_test_rmse} shows the best performance
+achieved by the different methods on the datasets for different ranks. As can be seen in the table,
+the proposed approaches outperform the MF method for the task of rating
+predictions in different datasets. The performance is significantly better for
+FX and EM datasets. 
+The better performance of the proposed methods for FX and EM datasets is because
+in these datasets there exists either the users or the items that have few
+ratings and the proposed approaches are effective in selecting the
+few ranks that can be estimated accurately for these users or
+items.
+Also, for NF dataset which has a high average number of ratings for the users
+and the items the performance of the proposed approaches is similar to that of
+the MF method. This is because the proposed methods use all the available ranks
+as active ranks in such a
+dataset and hence essentially reduces to MF method.
+
+
+Additionally, among the proposed methods, TMF +  Dropout
+outperforms the TMF, and this improved performance of TMF + Dropout illustrates
+its effectiveness in preventing overfitting and generating better predictions compared to that of the TMF
+method. 
+Furthermore, TMF + Dropout needs fewer ranks in comparison to that of MF to
+achieve the same performance for the majority of the datasets thereby
+illustrating its advantage over MF in terms of memory and storage requirements.
+
+
+\subsection{Performance for the users and the items with different number of
+ratings}
+We investigated how does the performance of the MF and the proposed methods vary
+for the users and the items with the different number of ratings.
+Table~\ref{table:drop_test_quart_rmse} shows
+the performance of the different methods for different quartiles of the users
+and the items ordered by their frequency. As can be seen in the table, the
+proposed methods outperform the MF method for lower quartiles for
+all the datasets and to some extent performs better for higher quartiles as
+well.
+The performance of the proposed method is significantly better for lower
+quartiles in FX, EM and to some extent in ML datasets, as these datasets contain users or
+items with few ratings.
+The better performance of the proposed methods for the users and the items 
+with few ratings is because unlike MF the proposed approaches consider only
+a subset of ranks that are estimated accurately while trying to predict
+ratings that involve infrequent users or items.
+Also, since NF dataset has a high average number of ratings, the proposed
+approaches use all the ranks as active ranks thereby giving similar performance 
+as that of the MF method for all the quartiles.
+
+
+Also, similar to our results for overall rating prediction the  TMF +
+Dropout method outperforms the TMF method for different quartiles for most of the
+datasets thereby demonstrating its advantage over the TMF method.
+
+
+\begin{table*}[hbt]
+\caption{Test RMSE of the proposed approaches for different datasets. We also
+  show the RMSE for the users and the items in
+different quartiles created in increasing order by their frequency. Q1 refers to
+the quartile containing the least frequent users or items followed by remaining
+in Q2, Q3, and
+Q4.
+}
+\label{table:drop_test_quart_rmse}
+  
+  \begin{center}
+    \begin{tabular}{lrrr|rrr}
+       & \multicolumn{3}{c}{EM} & \multicolumn{3}{c}{FX} \\
+      \hline
+      & \multicolumn{1}{p{1.7cm}}{\centering MF \\ (Rank 50)} &
+      \multicolumn{1}{p{1.7cm}}{\centering TMF \\ (Rank 50)} &
+     \multicolumn{1}{p{1.7cm}}{\centering TMF \\ + Dropout \\ (Rank 10)} &  
+      \multicolumn{1}{p{1.7cm}}{\centering MF \\ (Rank 10)} &
+      \multicolumn{1}{p{1.7cm}}{\centering TMF \\ (Rank 10)}
+      & \multicolumn{1}{p{1.7cm}}{\centering TMF \\ + Dropout \\ (Rank 15)} \\  
+      \hline
+      Overall & 1.166 & 1.161 & \underline{1.155} & 0.868 & 0.851 &
+      \underline{0.847} \\
+      \hline
+      Item Q1 & 1.626 & 1.584 & \underline{1.258} & 1.607  & \underline{1.252} & 1.256 \\ 
+      Item Q2 & 1.177 & 1.165 & \underline{1.139} & 1.190  & \underline{0.944} & \underline{0.944} \\ 
+      Item Q3 & 1.106 & 1.107 & \underline{1.104} & 0.898  & 0.785 &
+      \underline{0.780} \\ 
+      Item Q4 & 1.170 & 1.165 & \underline{1.161} & 0.864  & 0.851 &
+      \underline{0.847} \\ 
+      \hline
+      User Q1 & 1.600 & 1.437 & \underline{1.373} & 1.478 & \underline{1.247} &
+      1.260 \\ 
+      User Q2 & 1.242 & 1.240 & \underline{1.234} & 1.318 & \underline{1.144} &
+      1.151 \\ 
+      User Q3 & \underline{1.180} & 1.192 & 1.192 & 1.053 & \underline{0.964} &
+      \underline{0.964} \\ 
+      User Q4 & 1.119 & 1.119 & \underline{1.115} & 0.850 & 0.841 &
+      \underline{0.836} \\
+      \hline
+    \end{tabular}
+  \end{center}
+  
+  \begin{center}
+    \begin{tabular}{lrrr|rrr}
+      & \multicolumn{3}{c}{ML} & \multicolumn{3}{c}{NF} \\
+      \hline
+      & \multicolumn{1}{p{1.7cm}}{\centering MF \\ (Rank 25)} &
+      \multicolumn{1}{p{1.7cm}}{\centering TMF \\ (Rank 50)} &
+      \multicolumn{1}{p{1.7cm}}{\centering TMF\\ + Dropout \\ (Rank 25)} 
+      & \multicolumn{1}{p{1.7cm}}{\centering MF \\ (Rank 50)} &
+      \multicolumn{1}{p{1.7cm}}{\centering TMF \\ (Rank 50)} &
+      \multicolumn{1}{p{1.7cm}}{\centering TMF\\ + Dropout \\ (Rank 50)} 
+      \\  
+      \hline
+      Overall & 0.809 & 0.806 &  \underline{0.804} & 0.830 & \underline{0.829} &
+      \underline{0.829}\\
+      \hline
+      Item Q1 & 2.347 & 2.390 & \underline{2.115} & 0.958 & 0.959 &
+      \underline{0.956} \\ 
+      Item Q2 & 1.396 & 1.435 & \underline{1.123} & 0.935 & 0.935 &
+      \underline{0.932} \\ 
+      Item Q3 & 0.867 & 0.874 & \underline{0.851} & 0.887 & 0.887 &
+      \underline{0.884} \\ 
+      Item Q4 & 0.804 & \underline{0.801} & \underline{0.801} & 0.824 &
+\underline{0.823} & \underline{0.823} \\ 
+      \hline
+      User Q1 & 1.130 & 1.119 & \underline{1.078} & 1.019 & 1.019 &
+      \underline{1.014} \\ 
+      User Q2 & \underline{0.967} & 0.969 & 0.968 & 0.923 & 0.923 &
+      \underline{0.921} \\ 
+      User Q3 & \underline{0.856} & 0.859 & 0.863 & 0.859 & 0.859 &
+      \underline{0.858} \\ 
+      User Q4 & 0.774 & 0.770 & \underline{0.769} & 0.803 & \underline{0.802} &
+      \underline{0.802}\\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  \iffalse
+    \begin{center}
+      \begin{tabular}{lrrr}
+         & \multicolumn{3}{c}{BX }  \\
+        \hline
+        & \multicolumn{1}{p{1.5cm}}{\centering MF \\ (Rank 1)} &
+        \multicolumn{1}{p{1.5cm}}{\centering TMF \\ (Rank 5)} &
+        \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout \\ (Rank 50)} 
+        \\  
+        \hline
+        Overall & \underline{3.609} & 3.617 & 3.611  \\
+        \hline
+        Item Q1 & 3.861 & 3.834 & \underline{3.831}   \\ 
+        Item Q2 & 3.696 & \underline{3.641} & \underline{3.641}  \\ 
+        Item Q3 & 3.600 & 3.567 & \underline{3.565}   \\ 
+        Item Q4 & \underline{3.542} & 3.578 & 3.569   \\ 
+        \hline
+        User Q1 & 4.410 & \underline{4.351} & 4.361   \\ 
+        User Q2 & \underline{4.133} & 4.139 & 4.134   \\ 
+        User Q3 & 4.038 & 4.032 & \underline{4.026}   \\ 
+        User Q4 & \underline{3.457} & 3.472 & 3.465   \\ 
+        \hline
+      \end{tabular}
+    \end{center}
+  \fi
+
+\end{table*}
+
+

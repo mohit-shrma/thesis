@@ -1,0 +1,205 @@
+\chapter{Background and Related Work}
+\label{ch:related}
+
+The state-of-the-art methods for recommendations are based on matrix
+completion, and most of them involve factorizing the user-item rating
+matrix~\cite{Koren2009, koren2008factorization, hu2008collaborative}.
+%In this work, our focus is on analyzing the performance of the matrix
+%factorization-based matrix completion approach. 
+The \MF (MF) method assume that the
+user-item rating matrix is low-rank and can be computed as a product of two
+matrices known as the user and the item latent factors. 
+If for a user $u$, the vector $\bm{p_u} \in \mathbb{R}^f$ denotes the $f$ dimensional
+user's latent factor and similarly for the item $i$, the vector 
+$\bm{q_i} \in \mathbb{R}^f$ represents the $f$ dimensional item's latent factor, then the
+predicted rating for the user $u$ on the item $i$, i.e., $\hat{r}_{u,i}$ is given by
+
+\begin{equation} \label{mf_eq}
+  \begin{split}
+    \hat{r}_{u,i} = \bm{p_u}\bm{q_i}^T.
+  \end{split}
+\end{equation}
+
+
+The user and the item latent factors are estimated by minimizing a regularized
+square loss between the actual and predicted ratings 
+\begin{equation} \label{mf_obj}
+  \begin{aligned}
+    \minimize_{P, Q} & &\frac{1}{2}\sum_{r_{ui} \in R}
+    \left(r_{ui} - \bm{p}_u\bm{q}_i^T \right)^2+ \frac{\beta}{2}
+    \left(||P||_F^2 + ||Q||_F^2 \right),
+  \end{aligned}
+\end{equation}
+where the matrices $P \in \mathbb{R}^{m \times f}$ and $Q \in\mathbb{R}^{n \times f}$ 
+contains latent factors of the users and the items
+respectively. The parameter $\beta$ controls the Frobenius norm regularization
+of the latent factors to prevent overfitting.
+
+In a separate body of work~\cite{CandesTao2010, CandesRecht09}, it has been shown that in order to complete a $n \times n$ matrix of rank $r$
+accurately by matrix completion-based methods, $O(nr \log(n))$ entries should be sampled uniformly at random from the
+matrix.
+
+In real-world recommendation systems, it is not possible for a user to indicate
+his or her preferences over all the available items thereby leading to missing
+ratings in the user-item rating matrix. There has been some work that assumes
+all ratings are \emph{missing not at random} (MNAR) and models the missing data to improve the
+generated recommendations~\cite{marlin2012collaborative, pan2008one,
+hernandez2014probabilistic, Steck2010MNAR, Steck2013EvalRec, lim2015top,
+KimRecsys2014}.
+\iffalse
+However, in our work, we focus on investigating how
+do the missing ratings, i.e., both \emph{missing at random} (MAR) and \emph{missing not at
+random} (MNAR), or specifically how does the presence of few ratings for the
+users and the items affect the matrix completion-based methods. We use our analysis
+to develop a matrix completion-based approach to improve recommendations for the
+users who have provided few ratings on items or for the items that have
+received few ratings from the users.
+\fi
+
+There has been some work on locality-based matrix completion  methods which
+assume that different parts of the user-item rating matrix can be approximated
+accurately by different low-rank models~\cite{lee2013local,
+lee2014local,chen2015wemarec}. The complete user-item rating matrix
+can be approximated as a weighted sum of these individual low-rank models. 
+
+\iffalse
+In
+our work, we estimate a single low-rank model, rather than multiple different
+low-rank models, that adaptively select a subset of ranks for a rating by a
+user on an item by considering the number of ratings provided by the user and
+the number of ratings received by the item.
+\fi
+
+
+
+% =============== cold-start ===============================================
+
+The prior work to address the cold-start item recommendation can be divided 
+into \emph{non-collaborative} user personalized models 
+and \emph{collaborative} models. The non-collaborative models generate recommendations 
+using only the user's past
+interaction history and the collaborative models combine information from
+the preferences of different users. 
+
+Billsus and Pazzani~\cite{billsus99} developed one of the first user-modeling
+approaches to identify relevant new items. In this approach they used the users'
+past preferences to build user-specific models to classify new items
+as either ``relevant'' or ``irrelevant''. The user models were built using
+item features e.g., lexical word features for articles. Personalized 
+user models~\cite{rodriguez01} were also used to classify news feeds by modeling short-term user needs 
+using text-based features of items that were recently viewed by user and long-term needs were
+modeled using news topics/categories. Banos~\cite{banos06}
+used topic taxonomies and synonyms to build high-accuracy 
+content-based user models. 
+
+Recently collaborative filtering techniques using latent
+factor models have been used to address cold start item recommendation
+problems. These techniques incorporate item features in their factorization
+techniques. Regression-based latent factor models (RLFM)~\cite{agarwal09} is a
+general technique that can also work in item cold-start scenarios. 
+RLFM learns a latent factor representation of the preference matrix
+in which item features are transformed into a low dimensional space using regression.
+This mapping can be used to obtain a low dimensional representation of the cold-start
+items. User's preference on a new item is estimated by a dot product of
+corresponding low dimensional representations. The RLFM model was further
+improved by applying more flexible regression models~\cite{zhangrecsys11}.
+AFM~\cite{gantner10} learns item attributes to latent feature mapping
+by learning a factorization of the preference matrix
+into user and item latent factors $R = PQ^T$. A mapping function is then learned
+to transform item attributes to a latent feature representation i.e., $R = PQ^T =
+PAF^T$ where $F$ represents items' attributes and $A$ transforms the items' attributes 
+to their latent feature representation. 
+%Bayesian Personalized Ranking (BPR) Matrix Factorization
+%\cite{r6} was used to learn user and item latent factors i.e $P$ and $Q$
+%respectively. BPR loss function was also used to learn the mapping $A$.  
+
+%can add that AFM performance degrades on using high dimensional features as
+%reported in Asmaa's paper
+
+\CFLINEXP (\CFLIN)~\cite{elbadrawy2015} learns a personalized user
+model by using historical preferences from all users across the dataset. In
+this model for each user an item similarity function is learned, which is a
+linear combination of user-independent similarity functions known as
+\textit{global similarity functions}. Along with these global similarity
+functions, for each user a personalized linear combination of these global
+similarity functions is learned. It is shown to outperform both RLFM and AFM
+methods in cold-start \TOPN item recommendations.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Predictive bilinear regression models~\cite{chu09www} belong to the feature-based
+machine learning approach to handle the cold-start scenario for both users and
+items. Bilinear models can be derived from Tucker family~\cite{tucker66}. They have
+been applied to separate ``style'' and ``content'' in images~\cite{tenenbaum00}, to
+match search queries and documents~\cite{wu13jmlr}, to perform semi-infinite stream
+analysis~\cite{sun06kdd}, and etc. Bilinear regression models try to exploit the
+correlation between user and item features by capturing the effect of pairwise
+associations between them. Let $\bm{x}_i$ denotes features for user $i$ and $\bm{x}_j$
+denotes features for item $j$, and a parametric bilinear indicator of the
+interaction between them is given by $s_{ij} = \bm{x}_i^TW\bm{x}_j$ where $W$ denotes
+the matrix that describes a linear projection from the user feature space onto
+the item feature space. The method was developed for recommending cold-start
+items in the real time scenario, where the item space is small but dynamic
+with temporal characteristics. In another work~\cite{park09recsys}, authors proposed to
+use a pairwise loss function in the regression framework to learn the matrix
+$W$, which can be applied to scenario where the item space is static but
+large, and we need a ranked list of items.
+
+
+
+
+
+
+
+% =============== learning from sets =======================================
+
+There has been little published work on using set-level ratings to improve the
+accuracy of item-level recommendations. The one exception is a recent study in which relative
+preference information on different groups of items was collected during a new user
+signup process and these preferences were then used to assign a user to a set of
+pre-built recommendation profiles~\cite{r53}. 
+This approach significantly reduced the time required to learn the user's
+preferences in order to generate recommendations for the new user.
+The principal difference from this 
+approach is that in our work we try to model the user behavior that determines
+his/her estimated rating on a set and then use that to develop fully
+personalized recommendation methods that are not limited to new users.
+
+In addition, there has been some work that  has focused on recommending
+lists of items or bundles of items. For example, recommendation of music
+playlists~\cite{r55,moore2012learning,aizenberg2012build}, travel
+packages~\cite{interdonato2013versatile,r54,liu2011personalized,xie2011comprec}, reading
+lists~\cite{r56} and recommendation of lists under user specified budget
+constraints~\cite{xie2010breaking,BenouaretRecsys16}.
+However, this research is not directly related to the problems explored in this
+chapter because our focus is on learning the user's ratings on items in lists from
+the ratings that the user provided on these lists.
+
+Another relevant work is the problem of energy disaggregation~\cite{hart1992nonintrusive}, 
+which refers to the task
+of separating the energy signal of a building into the energy signals of
+individual appliances that reside in the building. Disaggregated energy
+consumptions are used to provide feedback to consumers,  forecast demands,
+design energy incentives and detect appliances'
+malfunction~\cite{froehlich2011disaggregated,darby2006effectiveness}. Similar to
+the idea of energy disaggregation, in our work, we try to separate a user's rating on a set of
+items into the users' ratings on items in the set and generate item
+recommendations for the user.
+
+The researchers have also investigated how different aspects, e.g., rating
+questions~\cite{bellogin2014magic}, reference
+points~\cite{adomavicius2011recommender,cosley2003seeing,nguyen2013rating}, and
+contextual factors~\cite{Winoto2010RUM}, can influence a user when
+elicited to provide a rating on an item. In our work, we have investigated how
+does the user provides a rating on a set of items and used the derive insights to develop
+collaborative filtering-based methods to predict the rating for an individual
+item in the set.
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,91 @@
+
+\iffalse
+In order to improve the performance of the recommender system, users are
+encouraged
+to go through a preference elicitation process, where they are asked to indicate
+their preferences on a sequence of items that they may have consumed before. The
+sequence of items in this process is designed such that a minimal effort is
+required from a user to get the sufficient number of ratings~\cite{r50,r51,r52}. 
+In a closely related work~\cite{r53}, the authors suggested collecting rating on a
+group of items as an alternative
+to ratings on individual items and used these ratings to assign a new user to a
+set of pre-built recommendation profiles. However, a key difference is that in
+this work we develop fully personalized recommendation methods and are not
+limited to new users as we can include the user's existing  rated items in
+the group.
+
+There has been little prior work on using ratings on sets of items in recommender
+systems. Most of that work has focused on recommending lists of items or bundles of
+items~\cite{xie2010breaking}. Some of these~\cite{r55,moore2012learning,aizenberg2012build} have developed methods to recommend the music
+playlists to users. Similarly, the authors
+in~\cite{interdonato2013versatile,r54,liu2011personalized,xie2011comprec} presented methods to recommend travel packages to users. However, unlike
+music playlists and to some extend travel packages, the items in a list need not
+be consumed sequentially, and a user may consume them in no particular
+order or consume a few of them, e.g., lists of books, bundle of video games 
+and shopping lists. In List Recommendation Model
+(LIRE)~\cite{r56}, a user's preference over individual books in a list are used to
+recommend existing reading lists to the users.
+Unlike these approaches that are focused on list recommendations, we are 
+interested in learning the user's preferences over individual items in the list
+from his/her preference on the list. 
+
+
+
+In addition, there has been a  recent study in which relative
+preference information on different groups of items was collected during a new user
+signup process and these preferences were then used to assign a user to a set of
+pre-built recommendation profiles~\cite{r53}. 
+This approach significantly reduced the time required to learn the user's
+preferences in order to generate recommendations for the new user.
+The principal difference from this 
+approach is that in our work we try to model the user behavior that determines
+his/her estimated rating on a set and then use that to develop fully
+personalized recommendation methods that are not limited to new users.
+
+\fi
+
+\iffalse
+Matrix factorization (MF) is one of the widely used collaborative
+filtering-based methods 
+in recommender systems~\cite{hu2008collaborative,koren2008factorization,koren2010collaborative,koren2009matrix}. 
+The  MF method assume that the
+user-item rating matrix is low-rank and can be computed as a product of two
+matrices known as the user and the item latent factors. 
+If for user $u$, the vector $\bm{p_u} \in \mathbb{R}^f$ denotes the $f$ dimensional
+user's latent representation and similarly for item $i$, the vector 
+$\bm{q_i} \in \mathbb{R}^f$ represents the $f$ dimensional item's latent
+representation, then the
+predicted rating for user $u$ on item $i$, i.e., $\hat{r}_{ui}$ is given by
+%
+\begin{equation} \label{mf_eq}
+  \begin{split}
+    \hat{r}_{ui} = \bm{p_u}^T\bm{q_i}.
+  \end{split}
+\end{equation}
+
+
+The user and item latent factors are learned by minimizing a regularized
+square loss between the actual and predicted ratings 
+\begin{equation}
+  \begin{aligned}
+    \operatornamewithlimits{minimize}_{P, Q} & &\frac{1}{2}\sum_{r_{ui} \in R}
+    \left(r_{ui} - \bm{p}_u^T \bm{q}_i \right)^2+ \frac{\beta}{2}
+    \left(||P||_F^2 + ||Q||_F^2 \right),
+  \end{aligned}
+\end{equation}
+where the matrices $P \in \mathbb{R}^{m \times f}$ and $Q \in\mathbb{R}^{n \times f}$ 
+contain the latent factors of the users and the items
+respectively. The parameter $\beta$ controls the Frobenius norm regularization
+of the latent factors to prevent overfitting. 
+Equation~\ref{mf_eq} can be solved by using Stochastic Gradient Descent (SGD)
+method~\cite{koren2009matrix}.
+\fi
+
+\iffalse
+Since naive SGD is not easy to parallelize and does not scale for large datasets, a
+variety of methods have been proposed to parallelize
+SGD~\cite{gemulla2011large,recht2011hogwild,recht2013parallel}.
+Alternating Least Squares (ALS)~\cite{zhou2008large} and CCD++~\cite{yu2012scalable} 
+can also be used for matrix factorization, and unlike SGD these
+schemes are inherently suitable for parallelization.
+\fi

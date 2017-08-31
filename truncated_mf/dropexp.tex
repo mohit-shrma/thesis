@@ -1,0 +1,77 @@
+\section{Experimental Evaluation}\label{ch:tmf:exp_eval}
+In this section, we conduct experiments to demonstrate the effectiveness of the
+proposed methods on different rating datasets presented in Table~\ref{table:ch:matcomp:datasets_table}.
+
+
+\iffalse
+\subsection{Datasets}\label{datasets}
+We evaluated the proposed methods on different rating datasets presented in
+Table~\ref{table:datasets_table}. Additional details about these datasets is as
+follow:
+
+\begin{itemize}
+  \item \textbf{\MLTM (ML)}: It
+  contains the ratings provided by the users to the movies on the 
+  Movielens\footnote{www.movielens.org} recommender system~\cite{konstan03ml}. The movies are rated on the scale
+  of 1-to-5 star.
+  %\item \textbf{\YMusic}: This dataset contains ratings from 100,000 users on
+  %50,000 songs. It was extracted from the \textit{Yahoo! Music user ratings of
+  %songs with song attributes, version 1.0} dataset, which is available through
+  %the Yahoo! Webscope data sharing program. The ratings values are on a scale
+  %from 1-to-5. 
+  %\item \textbf{\YMovies}: Similar to \YMusic, this dataset is made available
+  %through the Yahoo! Webscope data sharing program. It contains a sample of
+  %Yahoo! users' ratings on the movies on a scale from 1-to-5.  
+  %\item \textbf{\BX}: This dataset is extracted from \BX~\cite{r31} such that
+  %each user has rated at least four books and each book has received the same
+  %amount of ratings. The ratings on the books were provided by the users on the
+  %scale of 1-to-10.
+  \item \textbf{\FLIX (FX)}: It is a social movie site allowing users to share
+  movie ratings, discover new movies and meet others with similar movie taste.
+  This dataset contains the ratings provided by the users to the movies on the
+  scale of 1-to-5.
+  \item \textbf{\NF (NF)}: This dataset was provided by \NF as part of the \textit{\NF
+  Prize} competition\footnote{http://www.netflixprize.com}. In this dataset, the \NF users provided ratings to the
+  movies on the scale of 1-to-5.
+  \item \textbf{\EM (EM)}: The DEC Systems Research Center ran the \EM
+  recommendation service for 18 months to experiment with a collaborative
+  filtering algorithm. This dataset was released to the collaborative filtering
+  researchers to test their algorithms. The ratings are on the scale of 0-to-1
+  which maps linearly to the 0-to-5 star rating used externally on \EM.
+  %\item \textbf{\JEST}: This dataset~\cite{r58} contains 140 jokes with ratings from 
+  %59,132 users. The ratings are real values ranging from -10.00 to +10.00.
+\end{itemize}
+\fi
+
+
+\subsection{Evaluation methodology}
+To evaluate the performance of the proposed methods we divided the available
+ratings in different datasets into training, validation and test splits by
+randomly selecting 20\% of the ratings for each of the validation and the test
+splits. The validation split was used for model selection, and the model that
+was selected was used to predict ratings on the test split. We repeated this
+process three times and report the average RMSE across the runs.
+
+
+In addition to computing RMSE obtained by different methods for the ratings in
+the test split, we also investigated the performance of the proposed approaches
+for the items and the users with a different number of ratings in the training
+split. To this end, we ordered the items and the users in increasing order by
+their number of ratings in training split and divided them equally into four
+buckets or quartiles. We will report the RMSE achieved by different methods for ratings in
+the test split for the users and the items in these quartiles. 
+
+\subsection{Comparison methods}
+We compared the performance of our proposed approaches against the
+state-of-the-art \MF (MF) method described in Chapter~\ref{ch:related}.
+
+
+
+\subsection{Model selection}
+We performed grid search to tune the dimensions of the latent factors,
+regularization hyper-parameters and sigmoid function's parameters, i.e., $k$ and
+$z$. We searched for regularization weights ($\lambda$) in the range [0.001,
+0.01, 0.1, 1, 10], dimension of latent factors ($r$) in the range [1, 5, 10, 15,
+25, 50], steepness constant ($k$) in the range [1 5, 10, 20, 40] and mid-point
+($z$) in the range [-0.75, -0.50, -0.25, 0, 0.25, 0.50, 0.75]. The final parameters were selected based
+on the performance on the validation split.

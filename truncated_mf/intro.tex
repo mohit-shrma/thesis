@@ -1,0 +1,49 @@
+\section{Introduction} 
+\label{ch:tmf:intro}
+
+
+The matrix completion-based methods, e.g., \MF (MF)~\cite{Koren2009,
+koren2008factorization, hu2008collaborative}, are the state-of-the-art
+collaborative filtering methods that use users' historical preferences 
+over items to generate recommendations. The ratings provided by users over
+the items can be viewed as a matrix whose rows represent the users, columns
+denote the items, and entries are the ratings provided by the users over the
+items.  There exists a small number of attributes that describe the items, and
+a user's rating depends on how the user values those attributes. This makes the
+user-item rating matrix low-rank, and the number of attributes determines the
+rank of the matrix. The attributes of the items and the weights provided by
+a user over these attributes are often referred as the items' latent factors
+and the users' latent factors respectively. MF estimates the user-item rating
+matrix as the product of the user latent factors and the item latent factors.  
+
+
+In practice, there are few attributes that are responsible for a large
+portion of the rating provided by a user on an item and the remaining rating
+can be explained by other attributes. However, certain users have provided
+ratings to few items, and some items have received few ratings from the users
+thereby these users or items may not have sufficient ratings to estimate weights
+for all the attributes accurately. The inaccuracy in the estimation of weights
+for these users and items can affect the predicted ratings and hence affect
+the generated recommendations. Therefore, the recommendations for these users
+and items with few ratings may improve by focusing on few attributes that
+are responsible for a significant portion of the rating and can be estimated
+accurately by matrix completion-based methods.
+
+
+This chapter investigates how does the performance of the matrix
+completion-based methods changes with the number of ratings that a
+user or an item has, and shows that the users or the items with few
+ratings tend to have low accuracy. Additionally, we show that the error
+in predictions for such users or items increases further with the 
+increase in rank of the low-rank matrix completion-based methods. 
+Furthermore, we use these findings to develop \TMF which considers the number of
+ratings received by an item or provided by a user to estimate the rating of the
+user on the item. 
+The exhaustive experiments on the real datasets demonstrate the effectiveness of
+\TMF over the state-of-the-art MF method for the users and the items with few
+ratings.
+
+
+
+
+

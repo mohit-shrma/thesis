@@ -1,0 +1,332 @@
+
+\section{Truncated Matrix Factorization}\label{ch:tmf:drop_method} 
+In Section~\ref{ch:tmf:freqanal}, we showed that the infrequent items and the infrequent users tend to have a high error under matrix completion-based approach.
+Furthermore, this error increases with the increase in rank of the estimated
+low-rank models, i.e, increases with the dimension of estimated users' and items' latent factors.  
+We propose to use these observations to devise a approach, which we will
+refer to as Truncated Matrix Factorization (TMF), to improve the
+accuracy of the low-rank models for both the users and the items having few ratings. 
+Since for the items and the users with few ratings we may not be able to estimate 
+all the ranks of a low-rank model accurately, we propose to consider only a 
+subset of the ranks for these users or items.
+
+In our approach, the estimated rating for user $u$ on item $i$ is given by
+\begin{equation} \label{mf_drop_est_eq} 
+  \begin{split}
+  \hat{r}_{u,i} = \bm{p_u}(\bm{q_i}\odot\bm{h_{u,i}})^T,
+  \end{split}
+\end{equation}
+where $\bm{p_u}$ denotes the latent factor of user $u$, $\bm{q_i}$ represents the
+latent factor of item $i$,  $\bm{h_{u,i}}$ is a vector containing $1$s in the
+beginning followed by $0$s, and 
+$\odot$ represents the elementwise Hadamard product between the vectors.
+The vector $\bm{h_{u,i}}$ is used to select the ranks that are \emph{active} for the
+$(u,i)$ tuple. The $1$s in $\bm{h_{u,i}}$ denote the active ranks for the
+$(u,i)$ tuple.
+
+\subsection{Frequency adaptive truncation}
+A way to select the active ranks, i.e., $\bm{h_{u,i}}$ for a user-item rating is
+based on the frequency of the user and the item in the rating matrix. 
+%If either
+%the user or the item is infrequent then depending on the frequency the weight is
+%0 for later ranks as we may not have sufficient ratings to
+%estimate the later ranks accurately.  
+In this approach, for a given rating by a user on an item, first, we determine
+the number of ranks to be updated based on either the user or the item depending
+on the one having a lower number of ratings. 
+In order to select the ranks, we normalize the frequency of the user and the
+item,
+and use a non-linear activation function, e.g., sigmoid function, to map
+this frequency of the user or the item in [0, 1]. 
+Finally, we use the product of the output of the activation function
+and rank of the low-rank model as the number of active ranks selected
+for the $(u,i)$ tuple. The number of active ranks to be selected is given by
+\begin{equation} \label{rank_no_eq}
+  k_{u,i} = 
+  \begin{cases}
+    \frac{r}{1 + e^{-k(f_u -  z)}},& \text{if } f_u \leq f_i \\
+    \frac{r}{1 + e^{-k(f_i - z)}},& \text{otherwise},
+  \end{cases}
+\end{equation}
+\noindent where $r$ is the rank of the low-rank model, i.e., dimension of the user and the item latent factors,
+$f_u$ is the frequency of user $u$, $f_i$ is the frequency of item $i$, $k$
+controls the steepness of the sigmoid function and $z$ is the value
+of the sigmoid's midpoint. 
+An additional motivation for using a non-linear activation function, e.g.,
+sigmoid function, is that the shape of the plot in Figure~\ref{fig:freq_accu} is non-linear.
+Hence, using such a function assists in identifying the users or the items for whom we may estimate only a few ranks accurately.
+The active ranks to be selected are given by
+%\[
+\begin{equation} \label{rank_wt_eq}
+  \bm{h_{u,i}[j]} = 
+  \begin{cases}
+    1,& \text{if } j \leq k_{u,i} \\
+    0,& \text{otherwise}.
+  \end{cases}
+\end{equation}
+%\]
+We will refer to this method as Truncated Matrix Factorization (TMF). 
+
+\begin{algorithm}
+  \caption{Learn TMF}
+  \label{alg:learntmf}
+  \begin{algorithmic}[1]
+    \Procedure{LearnTMF}{}
+      \State $r \gets \text{rank of low-rank models}$
+      \State $\eta \gets  \text{learning rate}$
+      \State $\lambda \gets \text{regularization parameter}$
+      \State $k \gets \text{steepness constant}$
+      \State $z \gets \text{mid-point}$
+      \State $\mathcal{R} \gets \text{all users' ratings on items}$
+      %\State $f_u \gets \text{users' frequency}$
+      %\State $f_i \gets \text{items' frequency}$
+      \State $f \gets \text{users' and items' frequency}$
+      \State $iter \gets 0$
+      \State Init $P$, $Q$ with random values $\in$ [-0.01, 0.01] 
+      \While {iter $<$ maxIter or error on validation set decreases}
+        \ForAll{$r_{u,i} \in \mathcal{R}$}
+          \If{$f_u \le f_i$}
+          \State $k_{u,i} \gets \frac{r}{ 1 + e^{-k(f_u - z)}}$
+          \Else
+          \State $k_{u,i} \gets \frac{r}{ 1 + e^{-k(f_i - z)}}$
+          \EndIf
+          \State $\bm{h_{u,i}} \gets 1$
+          \ForAll{$j \in [1,r]}$
+            \If{$j > k_{u,i}$}
+              \State $\bm{h_{ui}}[j] \gets 0$
+            \EndIf
+          \EndFor
+          \State $\hat{r}_{u,i} = \bm{p_u}(\bm{q_i}\odot\bm{h_{u,i}})^T$
+          \State $e_{u,i} \gets \hat{r}_{u,i} - r_{u,i}$
+          \ForAll{$j \in [1, k_{u,i}]$}
+            \State $\bm{p_u}[j] \gets \bm{p_u}[j] - \eta (2 e_{u,i} q_i[j] + 2 \lambda \bm{p_u}[j])$
+            \State $\bm{q_i}[j] \gets \bm{q_i}[j] - \eta (2 e_{u,i} p_u[j] + 2 \lambda \bm{q_i}[j])$
+          \EndFor
+        \EndFor
+      \EndWhile
+      \State \Return $P, Q$
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
+
+
+\begin{algorithm}
+  \caption{Learn TMF + Dropout}
+  \label{alg:learntmfd}
+  \begin{algorithmic}[1]
+    \Procedure{LearnTMFDropout}{}
+      \State $r \gets \text{rank of low-rank models}$
+      \State $\eta \gets  \text{learning rate}$
+      \State $\lambda \gets \text{regularization parameter}$
+      \State $k \gets \text{steepness constant}$
+      \State $z \gets \text{mid-point}$
+      \State $\mathcal{R} \gets \text{all users' ratings on items}$
+      %\State $f_u \gets \text{users' frequency}$
+      %\State $f_i \gets \text{items' frequency}$
+      \State $f \gets \text{users' and items' frequency}$
+      \State $iter \gets 0$
+      \State Init $P$, $Q$ with random values $\in$ [-0.01, 0.01] 
+      \While {iter $<$ maxIter or error on validation set decreases}
+        \ForAll{$r_{u,i} \in \mathcal{R}$}
+          \If{$f_u \le f_i$}
+          \State $k_{u,i} \gets \frac{r}{ 1 + e^{-k(f_u - z)}}$
+          \Else
+          \State $k_{u,i} \gets \frac{r}{ 1 + e^{-k(f_i - z)}}$
+          \EndIf
+          \State
+          \State $\theta_{u,i} \sim Poisson(k_{u,i})$
+          \State $\bm{h_{u,i}} \gets 1$
+          \ForAll{$j \in [1,r]}$
+            \If{$j > \theta_{u,i}$}
+              \State $\bm{h_{ui}}[j] \gets 0$
+            \EndIf
+          \EndFor
+          \State $\hat{r}_{u,i} = \bm{p_u}(\bm{q_i}\odot\bm{h_{u,i}})^T$
+          \State $e_{u,i} \gets \hat{r}_{u,i} - r_{u,i}$
+          \ForAll{$j \in [1, \theta_{u,i}]$}
+            \State $\bm{p_u}[j] \gets \bm{p_u}[j] - \eta (2 e_{u,i} q_i[j] + 2 \lambda \bm{p_u}[j])$
+            \State $\bm{q_i}[j] \gets \bm{q_i}[j] - \eta (2 e_{u,i} p_u[j] + 2 \lambda \bm{q_i}[j])$
+          \EndFor
+        \EndFor
+      \EndWhile
+      \State \Return $P, Q$
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+\subsection{Frequency adaptive probabilistic truncation}
+
+An alternative way to select the active ranks is to assume that the
+number of active ranks follows a Poisson distribution with parameter
+$k_{u,i}$. 
+This method is similar to Dropout~\cite{srivastava2014dropout} technique in neural networks, where parameters
+are selected probabilistically for updates during learning of the model.
+Similar to regularization it provides a way of preventing overfitting in
+learning of the model. 
+The active ranks to be selected  are given by
+\[
+  \bm{h_{u,i}[j]} = 
+  \begin{cases}
+    1,& \text{if } j \leq \theta_{u,i} \\
+    0,& \text{otherwise},
+  \end{cases}
+\]
+\noindent where $\theta_{u,i} \sim Poisson(k_{u,i})$ and $k_{u,i}$ is given by Equation~\ref{rank_no_eq}.
+We will call this method as Truncated Matrix Factorization with Dropout (TMF + Dropout).
+
+
+\subsection{Model learning}
+The parameters of the model, i.e., the user and the item latent factors, can be estimated by minimizing a regularized
+square loss between the actual and the predicted ratings 
+\begin{equation} \label{mf_drop_obj}
+  \begin{aligned}
+    \minimize_{\bm{p_u}, \bm{q_i}} & &\frac{1}{2}\sum_{r_{ui} \in R}
+    \left(r_{ui} - \hat{r}_{u,i} \right)^2+ \frac{\beta}{2}
+    \left(||\bm{p}_u||_2^2 + ||\bm{q}_i||_2^2 \right),
+  \end{aligned}
+\end{equation}
+\noindent where the parameter $\beta$ controls the Frobenius norm regularization
+of the latent factors to prevent overfitting. This optimization problem can be
+solved by Stochastic Gradient Descent (SGD).
+Algorithms~\ref{alg:learntmf}~and~\ref{alg:learntmfd} provides the detailed procedure
+for TMF and TMF + Dropout, respectively. 
+
+\begin{table*}[hbt]
+\caption{Test RMSE for real datasets}
+\label{table:drop_test_rmse}
+  
+  \begin{center}
+    \begin{tabular}{lrrr|rrr}
+       & \multicolumn{3}{c}{EM} & \multicolumn{3}{c}{FX} \\
+      \hline
+      Rank & MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF \\ + Dropout} &  MF & TMF & \multicolumn{1}{p{1.5cm}}{\centering TMF \\ + Dropout} \\  
+      \hline
+      1 & 1.282  & NA & NA & 0.903 & NA & NA \\
+      5 & 1.174  & 1.174 & 1.164 & 0.873 & 0.860 & 0.861 \\
+     10 & 1.173 & 1.171 & \underline{1.155} & 0.868 & 0.851 & 0.849 \\
+     15 & 1.172 & 1.170 & 1.160 & 0.870 & 0.852 & \underline{0.847} \\
+     25 & 1.169 & 1.168 & 1.160 & 0.877 & 0.859 & 0.853 \\
+     30 & 1.168 & 1.166 & 1.160 & 0.880 & 0.864 & 0.856 \\
+     40 & 1.167 & 1.165 & 1.157 & 0.873 & 0.868 & 0.861 \\
+     50 & 1.166 & 1.161 & 1.156 & 0.877 & 0.874 & 0.867 \\
+      \hline
+    \end{tabular}
+  \end{center}
+     
+  \begin{center}
+      \begin{tabular}{lrrr|rrr}
+         & \multicolumn{3}{c}{ML} & \multicolumn{3}{c}{NF} \\
+        \hline
+        Rank & MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout} &  MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout} \\  
+        \hline
+        1 & 0.875 & NA & NA & 0.926 & NA & NA \\
+        5 & 0.824 & 0.824 &  0.822 & 0.863 & 0.863 & 0.864 \\
+        10 & 0.813 & 0.813 & 0.809 & 0.845 & 0.845 & 0.844 \\
+        15 & 0.810 & 0.810 & 0.805 & 0.839 & 0.839 & 0.838 \\
+        25 & 0.809 & 0.808 & \underline{0.804} & 0.834 & 0.834 & 0.833 \\
+        30 & 0.809 & 0.808 & 0.804 & 0.832 & 0.833 & 0.832 \\
+        40 & 0.809 & 0.807 & 0.804 & 0.831 & 0.831 & 0.831\\
+        50 & 0.809 & 0.806 & 0.804 & 0.830 & \underline{0.829} & \underline{0.829} \\
+        \hline
+      \end{tabular}
+  \end{center}
+
+ 
+  \iffalse
+  \begin{center}
+      \begin{tabular}{lrrr|rrr}
+         & \multicolumn{3}{c}{ML} & \multicolumn{3}{c}{BX} \\
+        \hline
+        Rank & MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout} &  MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout} \\  
+        \hline
+        1 & 0.875 & NA & NA & \underline{3.609}  &  NA & NA  \\
+        5 & 0.824 & 0.824 &  0.822 & 3.625  & 3.617 & 3.615 \\
+        10 & 0.813 & 0.813 & 0.809 & 3.625 & 3.617 & 3.614 \\
+        15 & 0.810 & 0.810 & 0.805 & 3.626 & 3.617 & 3.613 \\
+        25 & 0.809 & 0.808 & \underline{0.804} & 3.629 & 3.617 & 3.613  \\
+        30 & 0.809 & 0.808 & 0.804 & 3.630 & 3.617 & 3.612  \\
+        40 & 0.809 & 0.807 & 0.804 & 3.631 & 3.617 & 3.613  \\
+        50 & 0.809 & 0.806 & 0.804 & 3.633 & 3.617 & 3.611  \\
+        \hline
+      \end{tabular}
+    \end{center}
+
+
+
+    \begin{center}
+      \begin{tabular}{lrrr|rrr}
+         & \multicolumn{3}{c}{ML} & \multicolumn{3}{c}{NF} \\
+        \hline
+        Rank & MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout} &  MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout} \\  
+        \hline
+        1 & 0.875 & NA & NA & 0.926 & NA & NA \\
+        5 & 0.824 & 0.824 &  0.822 & 0.863 & & \\
+        10 & 0.813 & 0.813 & 0.809 & 0.845 & & \\
+        15 & 0.810 & 0.810 & 0.805 & 0.839 & & \\
+        25 & 0.809 & 0.808 & \underline{0.804} & 0.834 & & \\
+        30 & 0.809 & 0.808 & 0.804 & 0.832 & & \\
+        40 & 0.809 & 0.807 & 0.804 & 0.831 & & \\
+        50 & 0.809 & 0.806 & 0.804 & 0.830 & & \\
+        \hline
+      \end{tabular}
+    \end{center}
+
+    \begin{center}
+      \begin{tabular}{lrrr|rrr}
+         & \multicolumn{3}{c}{BX} & \multicolumn{3}{c}{x} \\
+        \hline
+        Rank & MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout} &  MF & TMF &  \multicolumn{1}{p{1.5cm}}{\centering TMF\\ + Dropout} \\  
+        \hline
+        1 & \underline{3.609}  &  NA & NA & NA & NA & NA \\
+        5 & 3.625  & 3.617 & 3.615 &  & & \\
+       10 & 3.625 & 3.617 & 3.614 &  & & \\
+       15 & 3.626 & 3.617 & 3.613 &  & & \\
+       25 & 3.629 & 3.617 & 3.613 &  & & \\
+       30 & 3.630 & 3.617 & 3.612 &  & & \\
+       40 & 3.631 & 3.617 & 3.613 &  & & \\
+       50 & 3.633 & 3.617 & 3.611 &  & & \\
+        \hline
+      \end{tabular}
+    \end{center}
+  \fi
+
+\end{table*}
+
+
+
+\subsection{Rating prediction}
+After learning the model the predicted rating for a user $u$ on a item $i$ for
+TMF model is given by
+\begin{equation}
+  \begin{split}
+    \hat{r}_{u,i} = \bm{p_u}(\bm{q_i}\odot\bm{h_{u,i}})^T,
+  \end{split}
+\end{equation}
+\noindent where the active ranks, i.e., $\bm{h_{u,i}}$, is given by
+Equation~\ref{rank_wt_eq}. The predicted rating for the user and the item under TMF + Dropout model is given
+by the least number of ranks for whom the cumulative distribution function (CDF)  for
+Poisson distribution with parameter $k_{ui}$ obtains approximately the value of
+1. The active ranks, i.e., $\bm{h_{u,i}}$, used for prediction under TMF + Dropout
+are given by
+\begin{equation}
+  \bm{h_{u,i}[j]} = 
+  \begin{cases}
+    1,& \text{if } j \leq s \\
+    0,& \text{otherwise},
+  \end{cases}
+\end{equation}
+\noindent where $s$ is the least number of ranks for whom the CDF, i.e, $P(x <= s) \approx 1
+$, $x \sim Poisson(k_{u,i})$ and $k_{u,i}$ is given by Equation~\ref{rank_no_eq}.
+
+
+
+
+
+
+
+

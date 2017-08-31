@@ -1,0 +1,97 @@
+\section{Introduction}
+
+%Today consumers are overwhelmed with the enormous volume of products that is
+%available for their consumption. 
+
+Recommender systems help consumers by providing suggestions that are
+expected to satisfy their tastes. They are successfully  deployed in several domains
+such as e-commerce (e.g., Amazon, Ebay), multimedia content providers (e.g., Netflix,
+Hulu) and mobile app stores (e.g., Apple, Google Play).
+Collaborative filtering~\cite{r30,koren2009matrix} which takes advantage of users' past preferences
+to suggest relevant items, is one of the key methods
+used by recommender systems.
+
+
+Most collaborative filtering approaches rely on past preferences provided by
+users on individual items.
+An additional source of preferences is the user's preferences on sets of items.
+Example of such set-level ratings includes
+ratings on song playlists, music albums, reading lists,
+and watchlists. 
+A rating provided by the user on a set of items conveys some information about the
+user's preference on each of the set's items and, as a result, it is a
+mechanism by which some information about user's preferences can be acquired for
+many items.
+At the same time, due to privacy concerns, users that are not willing to
+explicitly reveal their true preferences on individual items may provide a single
+rating to a set of items, since it provides some level of information hiding.
+%The acquisition of the users' preferences over individual items can be
+%time-consuming, as users have to indicate their preferences on items
+%sequentially~\cite{drenner2008crafting,Rashid02IUI}.
+
+This chapter investigates two questions related to using set-level preferences
+in recommender systems. 
+First, how users' item-level ratings relate to the
+ratings that they provide on a set of items. Second, how collaborative
+filtering-based methods
+can take advantage of such set-level ratings towards making item-level rating
+predictions.
+
+
+To answer the first question, we collected ratings on sets
+of movies from users of \ML, a popular online movie recommender
+system\footnote{www.movielens.org}. 
+Our analysis of these ratings leads to two key findings. First, for the majority
+of the users, the rating provided on a set can be accurately approximated by the
+average rating that they provided on the set's constituent items. Second, there
+is a considerable user population that tends to consistently either over- or
+under-rate the set, especially for sets that contain items on which the user's
+item-level ratings are diverse.
+Using these insights, we developed different  models that can predict
+a user's rating on a set of items as well as on individual items. 
+Furthermore, these methods can use ratings on both the sets and the items and
+lead to better results for the users that have either both or only one type of
+ratings.
+These methods solve
+these problems in a coupled fashion by estimating models to predict the item-level
+ratings and by estimating models that combine these individual ratings to derive
+set-level ratings.
+
+
+
+The key contributions of the work are the following:
+\begin{enumerate}[(i)]
+\item collection and analysis of a dataset that contains users' ratings both on
+individual items and on various sets containing these items;
+%
+\item introduction of \emph{Variance Offset Average Rating Model} (\VO) and
+\emph{Extremal Subset Average Rating Model} (\ES) to
+model a user's consistency to over- or under-rate the set of items as a function of his/her ratings on the set's constituent items; and
+%
+\item development of collaborative filtering-based methods that take
+advantage of \VO and \ES in order to estimate users' preferences on sets of items as well as
+on individual items.
+\end{enumerate}
+
+%\begin{enumerate}
+%  \item Analysis of the ratings acquired from real users on sets of items. 
+%  \item Development of matrix factorization based approaches to estimate the
+%    users' preferences on items from ratings on sets of items or from 
+%    ratings on both sets of items and items in the sets. 
+%  \item Release of the collected dataset to the community for research
+%    purposes..
+%\end{enumerate}
+
+The rest of the chapter is organized as follows. 
+Section~\ref{ch:lfs:related_work} describes the relevant
+prior work. Section~\ref{ch:lfs:dataset} describes the dataset creation process
+along with the analysis of the set ratings in relation to the users' ratings on
+their constituent items. 
+Section~\ref{ch:lfs:lfs_method} presents the methods that we developed to estimate the
+item-level models from the set ratings. 
+Section~\ref{ch:lfs:exp_eval} provides information about the evaluation methodology. 
+Section~\ref{ch:lfs:results} presents the results of the experimental evaluation. Finally, 
+Section~\ref{ch:lfs:conclusion} provides some concluding remarks.
+
+
+

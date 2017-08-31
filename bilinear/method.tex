@@ -1,0 +1,344 @@
+\section{Feature-based similarity model} \label{ch:bilinear:method}
+
+%\subsection{\CFEXP}\label{fbsm}
+To solve the cold-start item recommendation problem the current state-of-art 
+method \CFLIN models direct interaction between features. However,
+it fails to capture dependencies betweeen features. Modeling these dependencies
+can enable user to discover new items whose characteristics complement the items
+that he or she has liked in the past. To this end, we developed UFBSM that
+instead of learning linear feature-based similarity functions, it uses bilinear
+models to estimate the feature-based similarity of the items. Bilinear models
+estimate the contribution of all feature-pairs towards preferences of a user
+over items and as such allows \CF to identify relations between different pairs
+of features that correlate with a user liking an item. Thus, such a model can
+potentially identify items whose features complement each other and which can
+lead to better recommendations.
+
+
+Following \CFLIN, \CF computes the preference score for a new item $i$ for user
+$u$ as
+%
+\begin{equation} \label{est_Eq}
+  \begin{split}
+    \hat{r}_{ui} 	& = \sum_{j\in \mathcal{R}_u^+} \sml_{u}(i,j), 
+  \end{split}
+\end{equation}
+%
+\noindent where $\sml_u(i,j)$ is the user-specific similarity function given by
+%
+\begin{equation} \label{userSpecificSim_Eq}
+  \begin{split}
+    \sml_{u}(i,j)  & = \sum_{z=1}^{l} m_{u,z} \, \gsml_z(i,j), 
+  \end{split}
+\end{equation}
+%
+\noindent where $\gsml_z(.)$ is the $z$th global similarity function, $l$ is the number
+of global similarity functions,  and $m_{u,z}$ is a scalar that determines how
+much the $z$th global similarity function contributes to $u$'s overall
+similarity function. 
+
+However, unlike \CFLIN, in \CF the similarity between two items $i$ and $j$ under the $z$th global similarity function $\gsml_z(.)$ is estimated as
+%
+\begin{equation} \label{fullRankSimEq}
+  \begin{split}
+    \gsml_z(i,j) = \bm{f}_i W_z \bm{f}_j^T,
+  \end{split}
+\end{equation}
+\noindent where $W_z$ is the interaction matrix of the bilinear model that captures the 
+correlation among different pairs of
+item features under the global similarity function $\gsml_z(.)$. 
+The diagonal of $W_z$ determines linear interactions among features
+while the off-diagonal elements of $W_z$ capture the pairwise relations among
+features. The user-specific similarity function in Equation \ref{userSpecificSim_Eq}
+can be expanded as 
+%
+\begin{equation} \label{userSpecificSimExp_Eq}
+  \begin{split}
+    \sml_{u}(i,j) &= \sum_{z=1}^{l} m_{u,z} \, \bm{f}_i W_z \bm{f}_j^T. 
+  \end{split}
+\end{equation}
+%
+A key challenge in estimating the bilinear model matrices $W_z$s is that the number
+of parameters that needs to be estimated is quadratic on the number of features.
+In order to overcome this challenge, 
+we model $W_z$ as the sum of diagonal weights and a low-rank approximation of the off-diagonal weights:
+%
+\begin{equation}\label{approxW_Eq}
+  \begin{split}
+    W_z = D_z + V_z^TV_z,
+  \end{split}
+\end{equation}
+%
+\noindent where $D_z$ is a diagonal matrix and $V_z$ is a matrix of rank $h$.
+Note that in Equation \ref{approxW_Eq} the model assumes that $W_z$ is
+symmetric. %TODO: Justification
+Using this low-rank approximation the number of parameters that need to be 
+estimated is reduced significantly when compared with the full-rank formulation 
+of Equation \ref{fullRankSimEq}.
+The global similarity
+function $\gsml_z(.)$ is thus given by:
+%
+\begin{equation}\label{simEq}
+\begin{split}
+  \gsml_z(i,j)  & = \bm{f}_iW_z\bm{f}_j^T = \bm{f}_i(D_z + V_z^TV_z)\bm{f}_j^T\\
+   &= \bm{f}_i D_z \bm{f}_j^T  + \sum_{k=1}^{n_F}\sum_{\substack{p=1}}^{n_F} f_{ik}f_{jp}\bm{v_{z,k}} \cdot  \bm{v_{z,p}}. \\
+\end{split}
+\end{equation}
+%
+
+The first part of Equation \ref{simEq} captures the direct relations between
+features, whereas the second part of Equation \ref{simEq} captures the effect of off-diagonal
+elements of $W_z$ by inner product of latent factor of features. This also 
+gives us a flexible model where we can regularize diagonal weights and feature 
+latent factors separately.
+%what are the advantages of separate regularization?
+
+%TODO
+Note that unlike the bilinear model discussed in Section~\ref{ch:bilinear:related_work}, which
+models relations between user and item features~\cite{chu09www},
+\CF is trying to find correlations within features of
+items itself. The advantage of modeling interactions among item features is
+especially attractive when there are no explicit user features available. Note
+that it is not hard to encode the user features in the proposed bilinear model
+such that the similarity function is parameterized by user features, and we
+leave a detailed study to an extension of this paper.
+
+\subsection{Parameter Estimation}
+
+\CF is parameterized by $\Theta=[M, D_1, \ldots , D_l, V_1, \ldots ,V_l ]$, where
+$D_1, \ldots, D_l$, $V_1, \ldots, V_l$ are the parameters of the
+global similarity functions and $M$ is $n_{\cal U} \times l$ matrix of user's weight on
+global similarity functions. The inputs to the
+learning process are: ({\romannumeral 1}) the preference matrix ${R}$,
+({\romannumeral 2}) the item-feature matrix ${F}$, and ({\romannumeral 3}) the
+%TODO:
+dimension of latent factor of features. There are many loss functions that can
+be used to estimate $\Theta$, among which the Bayesian Personalized Ranking
+(BPR) loss function \cite{rendle2009bpr} is designed especially for ranking problems.
+% Moreover, in a
+% recent study~\cite{r42} the authors compared the BPR loss with other commonly
+% used loss functions and show that it outperforms other loss functions in the
+% context of \TOPN recommendation problems. 
+In the \TOPN recommender systems, the predicted preference scores are used
+to rank the items in order to select the highest scoring $n$ items. 
+The BPR loss function~\cite{rendle2009bpr,gantner10} tries to learn item preference scores such that the 
+items that a user liked have higher preference scores than the ones he/she 
+did not like, regardless of the actual item preference scores. 
+Thus it can better model the problem than other loss functions
+such as least squares loss and in general lead to better empirical
+performance. Therefore, we adopted BPR as the loss function to
+estimate model parameters $\Theta$ and it is given by
+%
+\begin{equation}\label{eq_bpr}
+\mathcal{L}_{bpr}(\Theta) \equiv - \sum_{u \in U} \sum_{\substack{i \in \mathcal{R}_u^+ ,\\  j \in \mathcal{R}_u^-}}  \ln \, \sigma(\hat{r}_{ui}(\Theta) - \hat{r}_{uj}(\Theta) ),
+\end{equation}
+%
+where $\sigma(x)$ is the sigmoid function and $\hat{r}_{ui}$ is the 
+estimated value of the user $u$'s preference for the item $i$. The estimated
+rating $\hat{r}_{ui}$ is given by
+%
+\begin{equation} \label{eq_est_true}
+\hat{r}_{ui} = \sum_{ j \in \mathcal{R}_u^+\backslash i} \sml_{u}(i,j),
+\end{equation}
+%
+which is identical to Equation \ref{est_Eq} except that item $i$ is excluded from the summation. 
+%\subsection{Optimization of the \CF models} \label{opt}
+
+The model parameters $\Theta=[M, D_1, \ldots , D_z, V_1, \ldots ,V_z ]$ are estimated 
+via an optimization of the following objective function:
+%
+\begin{equation} \label{eq_opt}
+\begin{split}
+  \min_{\Theta}
+  \mathcal{L}_{bpr}(\Theta) + \lambda \sum_{z=1}^l \|V_z\|_F^2 + \beta
+  \sum_{z=1}^l \|D_z\|_2^2 + \gamma \|M\|_F^2, \\
+\end{split}
+\end{equation}
+%
+where we penalize the frobenious norm of the model parameters in order to
+control the model complexity and improve its generalizability.
+%where $Reg(\Theta)$ represents regularization terms that control the model
+%complexity. 
+%If $V$ is the matrix containing the latent factor of features as
+%columns of matrix. 
+% In this paper, we used $\ell_2$-norm to regularize the two variables. 
+% Then regularization function is given by:
+% \begin{equation}\label{eq_reg}
+% \begin{split}
+% Reg(\Theta)  =  &  \lambda ||V||_F^2 + \beta||\bm{d}||_2^2 \\
+% \end{split}
+% \end{equation}
+%
+
+
+To optimize Equation \ref{eq_opt} we used stochastic gradient
+descent(SGD)~\cite{bottou2010large}, which is well-suited for large-scale datasets. The update
+steps for $D_z, V_z, m_{uz}$ are based on triplets $(u,i,j)$ sampled from the training
+data. For each triplet, we need to compute the estimated
+relative rank as $\hat{r}_{uij} = \hat{r}_{ui} - \hat{r}_{uj}$. If we let
+$
+\tau_{u,ij} = 1/(1 + e^{\hat{r}_{u,ij}}),
+$
+then the updates for model parameters for each SGD iteration is given by:
+\begin{eqnarray}
+  D_z &=&  D_z + \alpha_1 \Big( \tau_{u,ij}  \nabla_{D_z} \hat{r}_{u,ij} -
+  \beta D_z  \Big), \label{dUpdBPREq}\\ 
+  \bm{v}_{p}^z &=&  \bm{v}_{p}^z + \alpha_2 \Big(  \tau_{u,ij}
+  \nabla_{\bm{v}_{p}^z} \hat{r}_{u,ij} - \lambda \bm{v}_p^z  \Big), \label{vUpdBPREq} and \\ 
+  \bm{m}_{u,z} &=& \bm{m}_{u,z} + \alpha_3 \Big( \tau_{u,ij} \nabla_{\bm{m}_u,z}
+  \hat{r}_{u,ij} - \gamma \bm{m}_{u,z} \Big).  \label{mUpdBPREq} 
+\end{eqnarray}
+where $\alpha_1$, $\alpha_2$ and $\alpha_3$ are the learning rates of the SGD.
+
+\subsection {Performance optimizations}
+
+%TODO: discuss complexity wit george exact order and how it came
+In our approach, the direct computation of gradients is
+time-consuming and is prohibitive when we have high-dimensional item
+features. For example, the relative rank $\hat{r}_{u,ij}$ given by
+\begin{equation}\label{relRankExpEq}
+\begin{split}
+\hat{r}_{u,ij} &= \sum_{z=1}^l \bm{m}_{u,z} \Bigg(  
+\Big(\bm{f}_i (D_z + V_z^TV_z) \Big(\Big(\sum_{\substack{ q \in
+\mathcal{R}_u^+ }}\bm{f}_q\Big) - \bm{f}_i\Big)^T \Big) -  \\
+&\quad \quad \quad \quad \quad \quad \Big( \bm{f}_j (D_z + V_z^TV_z)
+\Big(\sum_{\substack{ q \in \mathcal{R}_u^+}}\bm{f}_q^T\Big) \Big) \Bigg),
+\end{split}
+\end{equation}
+has complexity of $O(|\mathcal{R}_u^+|n_F h l)$, where $h$ is the dimensionality
+of latent factors, $n_F$ is the number of features and $l$ is number of similarity
+functions.
+
+To efficiently compute these, let 
+\begin{equation*}
+  \bm{f_u} = \sum_{\substack{ q \in \mathcal{R}_u^+}}\bm{f}_q, 
+\end{equation*}
+which can be precomputed once for all users.
+Then, Equation \ref{relRankExpEq} becomes
+\begin{equation*}
+\begin{split}
+  \hat{r}_{u,ij} &= \sum_{z=1}^l \bm{m}_{u,z}\Bigg(  
+   \Big( \bm{f}_i (D_z + V_z^TV_z) (\bm{f}_u - \bm{f}_i)^T \Big) -  \\
+  &\quad \quad \quad \quad \quad \quad \Big( \bm{f}_j (D_z + V_z^TV_z)
+   \bm{f}_u^T \Big) 
+  \Bigg) \\
+  &= \sum_{z=1}^l \bm{m}_{u,z}\Bigg(  
+   \Big( (\bm{f}_i-\bm{f}_j)D_z\bm{f}_u^T - \bm{f}_iD_z\bm{f}_i^T \Big) +  \\
+  &\quad \quad \quad \quad \quad \quad  \Big(
+   (\bm{f}_i-\bm{f}_j)(V_z^TV_z)\bm{f}_u^T -
+  \bm{f}_iV_z^TV_z\bm{f}_i^T\Big) \Bigg) \\
+  &= \sum_{z=1}^l \bm{m}_{u,z}\Bigg(  
+   \Big( \bm{\delta}_{ij}D_z\bm{f}_u^T - \bm{f}_iD_z\bm{f}_i^T \Big) +  \\
+  &\quad \quad \quad \quad \quad \quad
+   \Big(\bm{\delta}_{ij}(V_z^TV_z)\bm{f}_u^T -
+  \bm{f}_iV_z^TV_z\bm{f}_i^T\Big) \Bigg) \\
+  &= \sum_{z=1}^l \bm{m}_{u,z} \Bigg( 
+   \Big( \bm{\delta}_{ij}D_z\bm{f}_u^T - \bm{f}_iD_z\bm{f}_i^T \Big) +  \\
+  &\quad \quad \quad \quad \quad \quad
+   \Big((V_z\bm{\delta}_{ij}^T)(V_z\bm{f}_u^T)^T -
+  (V_z\bm{f}_i^T)(V_z\bm{f}_i^T)^T\Big) \Bigg) ,
+\end{split}
+\end{equation*}
+
+where $\bm{\delta}_{ij} = \bm{f}_i-\bm{f}_j$.
+
+The complexity of computing the relative rank then becomes $O(l n_F h)$, which
+is lower than complexity of Equation \ref{relRankExpEq}.
+
+The gradient with respect to user weight is given by
+\begin{equation}
+  \begin{split}
+    \frac{\partial \hat{r}_{u,ij}}{\partial \bm{m}_{u,z}}  &=  \Bigg( 
+   \Bigg( \bm{\delta}_{ij}D_z\bm{f}_u^T - \bm{f}_iD_z\bm{f}_i^T \Bigg) +  \\
+  &\quad \quad \Bigg((V_z\bm{\delta}_{ij}^T)(V_z\bm{f}_u^T)^T -
+  (V_z\bm{f}_i^T)(V_z\bm{f}_i^T)^T\Bigg) \Bigg), 
+  \end{split}
+\end{equation}
+which has a complexity of $O(n_F h)$.
+
+The gradient of the diagonal component is given by
+\begin{equation} \label{eqDiagGrad}
+  \begin{split}
+    \frac{\partial \hat{r}_{u,ij}}{\partial D_z}  
+     %\frac{\partial}{\partial D_k}\left\{ \sum_{d=1}^{l}m_{u,d} \hat{r}_{u,ij,d}
+      %\right\}\\
+    %&= \frac{\partial}{\partial D_k}\left\{ m_{u,k} \hat{r}_{u,ij,k}
+      %\right\}\\
+    %&= \frac{\partial}{\partial D_k}\left\{ m_{u,k}(\Delta_{ij}^T D_k  F_u -
+    %f_i^T D_k  f_i) \right\}\\
+    &= m_{u,z} \Big(\bm{\delta}_{ij} \otimes \bm{f}_u - \bm{f}_i \otimes
+  \bm{f}_i \Big),\\
+  \end{split}
+\end{equation}
+where $\otimes$ represents elementwise scalar product. The complexity of
+Equation \ref{eqDiagGrad} is given by $O(n_F)$.
+
+The gradient of the low rank component is given by
+\begin{equation}
+  \begin{split}
+    \frac{\partial \hat{r}_{u,ij}}{\partial \bm{v}_p^z}  
+    %\frac{\partial}{\partial v_p^k}\left\{ \sum_{d=1}^{l}m_{u,d} \hat{r}_{u,ij,d}
+    %\right\}\\
+    %&= \frac{\partial}{\partial v_p^k}\left\{ m_{u,k} \hat{r}_{u,ij,k}
+    %\right\}\\
+    %&= \frac{\partial}{\partial v_p^k}\left\{ m_{u,k} \sum_{\substack{q \in
+    %\mathcal{R}_u^+, \\ q\ne i}}\sum_{m=1}^{n_F}\sum_{\substack{p=1, \\ p
+    %\ne m}}^{n_F} f_{im} f_{qp} (v_{m}^{k} \cdot v_{p}^{k}) - \sum_{\substack{q \in
+    %\mathcal{R}_u^+}}\sum_{m=1}^{n_F}\sum_{\substack{p=1, \\ p
+    %\ne m}}^{n_F} f_{jm} f_{qp} (v_{m}^{k} \cdot v_{p}^{k})\right\}\\
+    &= m_{u,z}\Big(\bm{\delta}_{ij,p} (V_z \bm{f_u}^T) +  \bm{f}_{up} (V_z
+    \bm{\delta}_{ij}^T) - 2\bm{f}_{ip} (V_z \bm{f_i}^T) \Big),\\ 
+  \end{split}
+\end{equation}
+whose complexity is $O(n_F h)$. 
+
+Hence, the complexity of gradient
+computation for all the parameters is given by $O(l(n_F h + n_F + n_F h))
+\approx O(l n_F h)$. We were able to obtain both the estimated relative rank
+and all the gradients in $O(l n_F h)$, which is linear with respect to
+feature dimensionality as well as the size of latent factors and the number of
+global similarity functions. This allows the $\CF_{bpr}$ to process large-scale datasets.
+
+%Due to the space constraint, we
+%provide the detailed gradient expressions and computational tricks in the
+%supplementary materials. 
+We summarize the proposed $\CF_{bpr}$ algorithm in
+Algorithm~\ref{alg-bpr}.
+\begin{algorithm}[t]
+\caption{$\CF_{bpr}$-Learn}
+\label{alg-bpr}
+\begin{algorithmic}[1]
+  \Procedure{\CF$_{bpr}$\_Learn}{}
+    \State $l \gets$ Number of global similarity functions
+    \State $\lambda \gets$ $V_1,\ldots,V_l$ regularization weights
+    \State $\beta \gets$ $D_1,\ldots,D_l$ regularization weights
+    \State $\gamma \gets$ M regularization weight
+    \State $\alpha_1, \alpha_2, \alpha_3 \gets$ $D$'s, $V$'s and $M$'s learning rates
+    \State Initialize $\Theta=[D_1,\ldots,D_l,V_1,\ldots,V_l,M]$ randomly 
+    
+    \State
+    
+    \While {not converged}
+      \For{ each user $u$} 
+        \State sample a pair ($i,j$) s.t.  $i \in \mathcal{R}_u^+$, $j \in \mathcal{R}_u^-$
+        \State compute $\hat{r}_{u,ij} = \hat{r}_{ui} - \hat{r}_{uj}$
+        %\State
+        \State compute $\nabla_{D_z} \hat{r}_{u,ij} $ 
+        \State compute $\nabla_{\bm{v}_{p}^z} \hat{r}_{u,ij} $ 
+        \State compute $\nabla_{\bm{m}_{u,z}} \hat{r}_{u,ij} $ 
+        %\State
+        
+        \State update $D_z$ using (\ref{dUpdBPREq})
+        \State update $\bm{v}_p^z \forall p$  using (\ref{vUpdBPREq})
+        \State update $\bm{m}_{u,z}$ using (\ref{mUpdBPREq})
+      \EndFor
+    \EndWhile
+    \State
+    \State \Return $\Theta=[D_1,\ldots,D_l,V_1,\ldots,V_l,M]$
+  \EndProcedure
+\end{algorithmic}
+\end{algorithm} 
+
+
+
+

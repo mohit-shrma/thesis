@@ -1,0 +1,20 @@
+\section{Conclusion} \label{ch:bilinear:conclusion}
+We presented here \CF for the personalized cold-start \TOPN item recommendation.
+It tries to learn multiple global bilinear similarity functions between items, 
+represented by their features, by
+using all the information available across users. It captures the
+interaction among the item features by using a bilinear model.
+The computation complexity of the bilinear model estimation is significantly reduced by
+modeling the similarity as sum of the diagonal component and off-diagonal component.
+The off-diagonal components are further estimated as dot product of latent spaces of
+features. Results on benchmark datasets shows that \CF can improve upon the existing
+linear collaborative methods used for the cold-start item recommendation. 
+
+%TODO: Results
+
+In future, we would like to try \CF on
+different kinds of transaction datasets. We would also like to see what effects
+does the non-negativity constraint on
+the model parameters lead to. We will also try \CF on a related but relevant problem
+of the actual rating prediction instead of \TOPN recommendation.
+

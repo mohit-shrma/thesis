@@ -1,0 +1,132 @@
+\chapter{Introduction}
+\label{ch:intro}
+
+This thesis focuses on investigating and developing methods to address
+different problems in the area of recommender systems. 
+Recommender systems are used to help consumers by providing recommendations
+that are expected to satisfy their tastes. 
+They can identify from a large pool of items those few
+items that are the most relevant to a user and have become an essential
+personalization and information filtering technology. They rely on the historical
+preferences that were either explicitly or implicitly provided for the items and
+typically employ various machine learning methods to build predictive models from
+these preferences. 
+For example, e-commerce services (e.g., Amazon, eBay) use them to help consumers by
+recommending products based on their past transactions, video streaming services
+(e.g., Netflix, Hulu) utilizes them to help their viewers by providing
+recommendations based on their
+previously watched movies or tv shows, and mobile app stores (e.g., Apple, Google Play)
+use them to recommend apps to their users.
+
+
+Recommender systems generally use collaborative filtering-based methods to generate
+recommendations and low-rank matrix completion is the state-of-the-art collaborative
+filtering method. However, its accuracy is affected due to the sparsity structure of
+the rating matrices in the real-world datasets and can not be applied as it is in
+certain scenarios, e.g., the recommendation of new items and generating recommendations
+based on their preferences on sets of items. This thesis primarily concentrates on
+three problems in the area of recommender systems. First, we investigate how does
+the accuracy of matrix completion is affected by the skewed distribution of user-item rating
+matrices and based on the derived insights we develop a method that performs better for
+users and items with few ratings. Second, matrix completion-based methods can not be
+applied to recommend new items as they do not have any prior preferences. We will
+develop a method to recommend new items to users based on the item features that will take
+into account the interaction among the item features. Finally, we will investigate how do
+a user's preferences on sets of items relate to his/her preferences over individual items
+and based on the analysis we will introduce collaborative filtering-based methods that can
+be used to recommend items to users.
+
+
+\section{Key Contributions}
+\label{ch:intro:contr}
+
+In this section, we will give a brief introduction to the contributions made in this thesis. 
+
+
+\subsection{Accuracy of matrix completion in recommender systems}
+The collaborative filtering methods for generating recommendations rely on preferences
+provided by the users over the items in the past. The matrix completion-based approaches
+are the state-of-the-art collaborative filtering methods that assume the user-item
+rating matrix is low rank and estimates the missing ratings based on the observed
+ratings in the matrix. However, the accuracy of these methods is affected by the
+distribution and the number of observed entries in the matrix.  
+
+In this thesis (Chapter~\ref{ch:matcomp}), we show that the skewed distribution of the
+user-item rating matrix affects the accuracy and the ranking performance of
+recommendations generated using matrix completion-based methods. Additionally, we will
+show that the items having few ratings have low accuracy under matrix completion approach.
+
+
+\subsection{Truncated Matrix Factorization}
+Certain attributes can describe an item being recommended, and few attributes
+determine a significant fraction of a user's rating over the item while other
+attributes can explain remaining rating. However, some users have provided ratings
+to few items, and some items have received few ratings from the users thus these
+users and items may not have sufficient ratings to estimate accurately the
+attributes that determine most of the user's rating over the item.
+
+In this thesis (Chapter~\ref{ch:tmf}), we introduce a new method called \TMF
+which considers the number of ratings received by an item or provided by a user to predict the user's rating over the item. 
+
+
+\subsection{\CFEXPB}
+Since state-of-the-art collaborative filtering methods rely on prior preferences by users over items to generate recommendations, it is difficult to recommend new items as they do not have any previous preferences associated with them. The new items in recommender systems are often referred to as cold-start items. We can use non-collaborative filtering methods that rely on similarities between the new items and the items preferred by a user in the past to generate cold-start item recommendations. A major drawback of these methods is that they ignore the interactions among the item attributes and consider them independently while computing similarities between the items. The cold-start item recommendations can benefit from capturing the interactions between item features as modeling these interactions may provide additional information towards the significance of the item. 
+
+We will present the method \CFEXPB in Chapter~\ref{ch:bilinear} of this thesis, which leverages all the available information across users to model interactions among features and learns a user personalized bilinear similarity low-rank model for \TOPN recommendation of new items.
+
+
+\subsection{Learning from sets of items in recommender systems}
+
+The collaborative filtering approaches used to generate recommendations depend
+on the preferences provided by users over individual items. However, the users
+can also indicate their preferences over sets of items rather than individual
+items and these preferences over sets of items can serve as an additional source
+of the users' preferences.  Such set-level ratings are readily available in most
+of the existing recommender systems, e.g., ratings on song playlists, music albums,
+and reading lists. A user's preferences can be acquired for many items by using
+his/her preferences on different sets of items. Additionally, sometimes the users
+are not willing to explicitly reveal their true preferences on individual items
+but may provide a single rating to a set of items as it provides some level of
+information hiding. 
+
+
+In this thesis (Chapter~\ref{ch:lfs}), we will investigate how do a user's set-level ratings relate to the individual item-level ratings and how can we use collaborative filtering-based methods to generate item recommendations by using set-level ratings. To this end, we have collected ratings from active users of \ML\footnote{www.movielens.org}, a popular online movie recommender systems and based on our analysis of these collected ratings we will present different models that can predict a user's rating on a set of items as well as on individual items.
+
+%They are widely used in several domains such as e-commerce
+%(e.g., Amazon, eBay), multimedia content providers (e.g., Netflix, Hulu) and
+%mobile app stores (e.g., Apple, Google Play).
+
+\section{Outline}
+\label{ch:intro:outline}
+This thesis is organized as follows:
+
+\begin{itemize}
+
+\item Chapter~\ref{ch:notations} provides notation which is used
+throughout this thesis.
+
+\item Chapter~\ref{ch:related} provides details of the existing research related to the different problems and methodologies presented in this thesis.
+
+\item Chapter~\ref{ch:matcomp} investigates how does the skewed distribution of ratings in rating matrices affects the accuracy and the ranking performance of recommendations generated using matrix completion-based methods.
+
+
+\item Chapter~\ref{ch:tmf} presents \TMF,  a new matrix completion-based method which considers the number of ratings that a user or an item has before predicting the rating of the user on the item.
+
+
+\item Chapter~\ref{ch:bilinear} presents \CFEXPB method to address \TOPN cold-start item recommendations problem.
+
+
+\item Chapter~\ref{ch:lfs} investigates how does a user's set-level rating relates to the item-level ratings and presents collaborative filtering-based methods that use set-level ratings to generate item recommendations.
+
+
+
+\item Chapter~\ref{ch:conclusion} summarizes the research presented in this thesis and provide concluding remarks along with some future research directions.
+
+\end{itemize}
+
+
+
+
+
+
+

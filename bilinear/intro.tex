@@ -1,0 +1,100 @@
+\section{Introduction} \label{ch:bilinear:introduction}
+
+\TOPN recommender systems are used to identify from a large pool of items those $n$
+items that are the most relevant to a user and have become an essential
+personalization and information filtering technology. They rely on the historical
+preferences that were either explicitly or implicitly provided for the items and
+typically employ various machine learning methods to build \emph{content-agnostic}
+predictive models from these preferences. However, when new items are introduced into
+the system, these approaches cannot be used to compute personalized recommendations,
+because there are no prior preferences associated with those items.
+%
+As a result, the methods used to recommend new items, referred to as (item)
+\emph{cold-start} recommender systems, in addition to the historical information,
+take into account the characteristics of the items being recommended; that is, they
+are \emph{content aware}. The items' characteristics are typically captured by a set
+of domain-specific features. For example, a movie may have features like genre,
+actors, and plot keywords; a book typically has features like content description and
+author information. These item features are intrinsic to the item and as such they do
+not depend on historical preferences. 
+%These item features are available as soon as the new items are introduced in the
+%inventory and can be used for recommender systems in absence of historical records
+%on the interactions among users and these items.
+
+Over the years, a number of approaches have been developed towards solving the
+item cold-start problem ~\cite{r1,agarwal09,r10} that exploit the
+features of the new items and the features of
+the items on which a user has previously expressed his interest. A recently introduced approach, which
+was shown to outperform other approaches is the \CFLINEXP (\CFLIN)~\cite{r42}.
+In this approach, a linear similarity function is estimated for each user that
+depends entirely on features of the items previously liked by the user, which is
+then used to compute a score indicating how relevant a new item will be for that
+user. In order to leverage information across users (i.e., the transfer learning
+component that is a key component of collaborative filtering), each user
+specific similarity function is computed as a linear combination of a small
+number of \emph{global} linear similarity functions that are shared across
+users. Moreover, due to the way that it computes the preference scores, it can
+achieve a high-degree of personalization while using only a very small number of
+global linear similarity functions.
+
+
+
+%TODO: move this to relevant work section
+\iffalse 
+Besides the non-collaborative models, another important group of techniques used in cold-start recommender systems are collaborative methods~\cite{r1,r2,r3,r9}, which are based on latent factors. These models leverage the knowledge
+available from all the users and their past preferences. However, these latent
+factor methods don't perform well when sparsity of dataset grows, i.e., items have limited number of preferences on average~\cite{r29}.
+\fi
+
+%cite some references
+In this work we extend \CFLIN in order to account for interactions between the
+different item features. We believe that such interactions are
+important and quite common. For example, in an e-commerce website, the items
+that users tend to buy are often designed to go well with previously purchased
+items (e.g., a pair of shoes that goes well with a dress). The set of features
+describing items of different type will be different (e.g., shoe material and
+fabric color) and as such a linear model can not learn from the data that for
+example a user prefers to wear leather shoes with black clothes. Being able to model such
+dependencies can lead to item cold-start recommendation algorithms that achieve
+better performance.
+
+Towards this goal, we present a method called \CFEXPB (\CF) that uses bilinear
+models to capture pairwise dependencies between the features. Like \CFLIN, \CF
+estimates a user-specific similarity function by linearly combining a small
+number of global similarity functions. However, unlike \CFLIN's linear global
+similarity functions, \CF's global similarity functions are bilinear.
+A challenge associated with such bilinear models is that the number of
+parameters that needs to be estimated becomes quadratic on the dimensionality of
+the item's feature space, which is problematic given the very sparse training
+data. \CF overcomes this challenge by assuming that the pairwise relations can
+be modeled as a combination of a linear component and a low rank component. The
+linear component allows it to capture the direct relations between the features
+whereas the low rank component allows it to capture the pairwise
+relations. 
+The parameters of these models are
+estimated using stochastic gradient descent and a ranking loss function based on
+Bayesian personalized ranking (BPR) that optimizes the area under the receiver
+operating characteristic curve.
+
+We performed extensive empirical studies to evaluate the performance of the proposed
+\CF on two benchmark datasets and compared it against state-of-the-art models for
+item cold-start recommendation. In our results \CF optimized using the BPR loss function can
+improve upon other methods in terms of recommendation quality, especially for
+datasets in which there are considerable historical data for each item and
+datasets whose items are described by relatively small number of features.
+
+%The paper here is a generalized extension of work~\cite{r43} I did at Samsung Research America during my summer internship in 2014. 
+The chapter here is a generalized extension of work~\cite{r43}. 
+Rest of the chapter is organized as follow: 
+%Section~\ref{} %$2$
+%defines the notations and
+%definitions that are used in the paper. 
+%Section~\ref{} %$3$
+%discusses the related work.
+Section~\ref{ch:bilinear:method} %$4$
+describes \CF and optimization methods that are used to estimate
+model parameters. Section~\ref{ch:bilinear:experiments}  %$5$
+shows the evaluation methodology and section~\ref{ch:bilinear:results} %$6$
+discusses the results. 
+Section~\ref{ch:bilinear:conclusion} %$7$ 
+concludes the work in the paper.

@@ -1,0 +1,117 @@
+\chapter{Notations}
+\label{ch:notations}
+
+
+All vectors are represented by bold lower case letters(e.g., $\bf{p}, \bf{q}$). The $i$th component of vector $\bm{p}$ is denoted
+by $\bm{p[i]}$. All matrices are represented by upper
+case letters (e.g., $R$, $P$). The $i$th row of a matrix $P$  is represented by $\bf{p_i}$. The ($i$, $j$) entry of matrix $W$ is denoted by
+$w_{i,j}$.
+The predicted rating of user $u$ on item $i$ is denoted by $\hat{r}_{u,i}$.
+We use calligraphic letters to denote sets (e.g., $\mathcal{S}$, $\mathcal{T}$), and the size of a set $\mathcal{S}$ is represented by
+$|\mathcal{S}|$.
+
+
+
+
+
+
+
+\iffalse
+
+Throughout the paper, all vectors are column vectors and are represented by
+bold lowercase letters (e.g., $\bm{p,q}$). The row vectors are represented by
+having the transpose super-script (e.g., $\bm{p^T}$). Matrices are represented by upper
+case letters (e.g., ${R,W}$). The ($i$, $j$) entry of matrix $W$ is denoted by
+$w_{i,j}$. The \textit{i}th row of matrix $P$ is represented by $\bm{p}_i^T$. We use calligraphic letters to denote sets (e.g.,
+$\mathcal{C,D}$), and the size of a set $\mathcal{S}$ is represented by
+$|\mathcal{S}|$. 
+ 
+ 
+A predicted value is denoted by having a
+$\mathbf{\tilde{}}$ (tilde) over it (e.g., $\tilde {r}$) and an estimated value
+is denoted by having a $\mathbf{\hat{}}$ (hat) over it (e.g., $\hat {r}$).
+
+\users and \items are used to denote the sets of users and items, respectively,
+whose respective cardinalities are \nusers and \nitems (i.e., $|\users| =
+\nusers$ and $|\items| = \nitems$). Matrix \rmat will be used to represent the
+user-item feedback/rating matrix of size $\nusers \times \nitems$, i.e., $\rmat
+\in \mathds{R}^{\nusers \times \nitems}$. Symbols \usru and \itmi are used to denote
+individual users and items, respectively. An entry $(u, i)$ in \rmat, denoted by
+\rui, is used to represent the rating on item \itmi by user \usru.
+%
+For implicit feedback, \rmat is converted to a binary matrix. If the user has
+provided feedback for a particular item, then the corresponding entry in \rmat
+is $1$, otherwise it is $0$. We will refer to the entries for which the user
+has provided feedback as \emph{rated} items and those for which the user has
+not provided feedback as \emph{unrated} items.
+
+For quick reference, all the important symbols used, along with
+their definition is summarized in \tblref{tbl:notations}.
+%
+\begin{table}[htb]
+    \begin{center}
+    \caption{Symbols used and definitions.}
+    \label{tbl:notations}
+    \begin{tabular}{
+		@{\hspace{2pt}}l@{\hspace{2pt}} 
+		@{\hspace{2pt}}l@{\hspace{2pt}}
+	}
+	\toprule
+	\toprule
+	%
+	\bf{Symbol}	&	\bf{Definition}	\\
+	%
+	\midrule
+	%
+	\users			&	Set of users.	\\
+	\items			&	Set of items.	\\
+	\usru, \itmi	&	Individual user $u$, item $i$. \\
+	\nusers, \nitems	&	Number of users and items, $\nusers = |\users|,\nitems =
+	|\items|$. \\
+	\nfactors		&	Number of latent factors.	\\
+	\nfactorsInd	& 	Number of latent factors for local preferences component in 
+						\nlmfi. \\
+	\ninterests		&	Number of user local preferences. \\
+	\nuclusters, \niclusters		&	Number of user and item clusters.	\\
+	\ic				& 	Item cluster assignment	\\
+	\uc				& 	User cluster assignment	\\
+	\rmat			&	User-Item Feedback/Rating Matrix, $\rmat \in \mathds{R}^{\nusers
+	\times \nitems}$. \\
+	\rplusu			&	Set of items for which user \usri has provided feedback	\\
+	\rminusu		&	Set of items for which user \usri has not provided feedback	\\
+	\rui			& 	Rating by user \usru on item \itmi. \\
+	\ruih			& 	Predicted rating for user \usru on item \itmi. \\
+	\buvec			&	User Bias vector, $\buvec \in \mathds{R}^{1 \times \nusers}$. \\
+	\bivec			&	Item Bias vector, $\bivec \in \mathds{R}^{1 \times \nitems}$. \\
+	\bumat			& 	User-Interest Bias matrix, $\bumat \in \mathds{R}^{\nusers \times
+	\ninterests}$. \\
+	\bucmat			& User Cluster Bias matrix, $\bucmat \in \mathds{R}^{\nusers \times
+	\niclusters}$.
+	\\
+	\bicmat			& Item Cluster Bias matrix, $\bumat \in \mathds{R}^{\nitems \times
+	\nuclusters}$. \\
+	\pmat			&	User Latent Factor Matrix, $\pmat \in \mathds{R}^{\nusers \times
+	\nfactors}$.	\\
+	\wmat			&	User Latent Factor Tensor, $\wmat \in \mathds{R}^{\nusers \times
+	\nfactors \times \ninterests}$.	\\
+	\qmat			&	Item Latent Factor Matrix, $\qmat \in \mathds{R}^{\nitems \times
+	\nfactors}$.	\\
+	\ymat			&	Item Latent Factor Matrix, for local preferences component in \\
+	 				&	\nlmfi, $\ymat \in \mathds{R}^{\nitems \times \nfactorsInd}$. \\
+	\smat			&	Item-Item Similarity matrix, $\smat \in \mathds{R}^{\nitems \times
+	\nitems}$	\\
+	\reguserp		&	$\ell_F$ regularization weight. \\
+	\samFactor		&	Sampling factor for learning algorithm.	\\
+	\lr				&	Learning Rate for learning algorithm. \\
+	$n^+_u$			&	Number of items for which user \usri has provided feedback	\\
+	\reguser, \regitem		&	$\ell_F$ regularization weights 		\\
+	\normc			&	User Normalization constant	\\
+	
+	%	
+	\bottomrule
+	\bottomrule
+	\end{tabular}
+	\end{center}
+\end{table}
+\fi
+

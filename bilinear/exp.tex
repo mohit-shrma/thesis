@@ -1,0 +1,220 @@
+
+\section{Experimental Evaluation} \label{ch:bilinear:experiments}
+
+In this section we perform experiments to 
+demonstrate the effectiveness of the proposed algorithm. 
+
+\subsection{Datasets}
+We used four datasets to evaluate the performance of \CF.
+
+\CULEXP (\CUL)\footnote{http://citeulike.org/} aids researchers by allowing
+them to add scientific articles to their libraries. For users of the \CUL, the
+articles present in their library are considered as preferred articles i.e., $1$
+in a preference matrix while rest are considered as implicit $0$ preferences. 
+
+\MLHREXP (\MLHR) is the dataset described in~\cite{cantador11}. The ratings were
+binarized by treating all ratings greater than $2$ as $1$ and below or equal 
+to $2$ as $0$. The movie genres were used as the item's content. 
+ 
+Amazon Books (\AMAZON) is a dataset collected from amazon about best-selling books
+and their ratings. The ratings are binarized by treating all ratings greater
+than equal to $3$ as $1$ and ratings below $3$ as $0$. Each is accompanied with a
+description which was used as item's content.
+
+Various statistics about these datasets are shown in Table~\ref{datasets_table}.
+Also comparing the densities of the datasets we can see that the \MLHREXP dataset 
+have significantly higher density than other dataset.
+
+\BX (BX) dataset is extracted from Book Crossing
+data~\cite{ziegler05www} such
+that user has given at least four ratings and each book has received the same
+amount of ratings. Description of these books were collected from Amazon using
+ISBN and were used as item features.
+
+For the \AMAZON, \CUL and \BX dataset, the words that appear in the item descriptions were
+collected, stop words were removed and the remaining words were stemmed to
+generate the terms that were used as the item features. All words that appear in
+less than 20 items and all words that appear in more than 20\% of the items were
+omitted. The remaining words were represented with TF-IDF scores. The item
+feature matrix was normalized row-wise in datasets. 
+
+
+%================================================================================
+
+
+% \begin{table*}[thb]\footnotesize
+%    \centering
+%    %\tbl {Statistics for the datasets used for testing\label{datasets_table}}{%
+%     \caption{Statistics for the datasets used for testing} \label{datasets_table}
+%     %\begin{center}
+    
+%     %\vspace{-1pt}
+   
+%     \begin{threeparttable}
+%     %\begin{scriptsize}
+%     %\caption{Statistics for the 5 datasets used for testing}  
+%     \begin{tabular}{
+%       @{\hspace{2pt}}l@{\hspace{3pt}}
+%       @{\hspace{2pt}}r@{\hspace{3pt}}
+%       @{\hspace{2pt}}r@{\hspace{3pt}}
+%       @{\hspace{2pt}}r@{\hspace{3pt}}
+%       @{\hspace{2pt}}r@{\hspace{3pt}}
+%       @{\hspace{2pt}}r@{\hspace{3pt}}
+%       @{\hspace{2pt}}r@{\hspace{3pt}}
+%       @{\hspace{2pt}}r@{\hspace{3pt}}
+%     }
+% 	%\toprule
+% 	%ML100K
+% 	%\toprule
+% 	\hline
+% 	\hline
+% 	\textbf{Dataset}	& \textbf{users}	&	\textbf{items}		&	\textbf{features}	&	\textbf{preferences}	&	\textbf{prefs/user}	&	\textbf{prefs/item}	& \textbf{density}\\
+% 	\hline
+% 	\hline
+% 	%\rule{-2pt}{3ex}
+% 	\CUL  		& 	3,272 & 	21,508 	& 	6,359 	& 	180,622 	&	55.2 		& 	8.4 		&  	0.13\%	\\
+%  	\MLHREXP 	&	  2,113 & 	10,109 	& 	20 	    & 	855,598 	& 404.9 	& 	84.6    &	  4.01\%	\\
+% 	\hline
+% 	\hline
+	
+% 	\end{tabular}
+
+\begin{table*}[t]%\footnotesize
+   \centering
+   %\tbl {Statistics for the datasets used for testing\label{datasets_table}}{%
+    \caption{Statistics for the datasets used for testing} \label{datasets_table}
+    %\begin{center}
+    
+    %\vspace{-1pt}
+   
+
+    %\begin{scriptsize}
+    %\caption{Statistics for the 5 datasets used for testing}  
+    \begin{tabular}{
+      @{\hspace{2pt}}l@{\hspace{3pt}}
+      @{\hspace{2pt}}r@{\hspace{3pt}}
+      @{\hspace{2pt}}r@{\hspace{3pt}}
+      @{\hspace{2pt}}r@{\hspace{3pt}}
+      @{\hspace{2pt}}r@{\hspace{3pt}}
+      @{\hspace{2pt}}r@{\hspace{3pt}}
+      @{\hspace{2pt}}r@{\hspace{3pt}}
+      @{\hspace{2pt}}r@{\hspace{3pt}}
+    }
+  %\toprule
+  %ML100K
+  %\toprule
+  \hline
+  \textbf{Dataset}  & \textbf{users}  & \textbf{items}    & \textbf{features} & \textbf{preferences}  & \textbf{prefs/user} & \textbf{prefs/item} & \textbf{density}\\
+  \hline
+  %\rule{-2pt}{3ex}
+  \MLHR  &   2,113 &   10,109  &   20      &   855,598   & 404.9   &   84.6    &   4.01\%  \\
+  \CUL      &   3,272 &   21,508  &   6,359   &   180,622   & 55.2    &   8.4     &   0.13\%  \\
+	\BX & 17,219 &	36,546 	& 	8,946 	& 	574,127 	& 	33.3 		& 	15.7 		&	0.09\%	\\
+  \AMAZON		 & 13,097 	& 	11,077 	& 	5,766 	& 	175,612 	& 	13.4 		& 	15.9	&	0.12\%	\\ 
+  \hline
+  
+  \end{tabular}
+
+    %\end{scriptsize}
+   % \end{center}
+    %\vspace{-20pt}   	
+    %\caption{Statistics for the 5 datasets used for testing}  \label{datasets_table}
+\end{table*}
+
+%---------------------------------------------------------------------------
+
+
+\subsection{Comparison methods} \label{other_methods}
+%TODO: comparison with latent factor based method
+We compared \CF against non-collaborative personalized user modeling methods and
+collaborative methods.
+
+\begin{enumerate}
+  \item \textbf{Cosine-Similarity (\COSIM)}
+       This is a personalized user-modeling method.
+        The preference score of user $u$ on target item $i$ is estimated using
+        Equation~\ref{eq_est_true} by using \emph{Cosine Similarity} to compute
+        similarity between the items.
+  \item{\textbf{\CFLINEXP (\CFLIN)}}
+        As mentioned before, this method~\cite{elbadrawy2015} learns personalized user model
+        by using all the past preferences from users across the dataset. It
+        outperformed other state of the art collaborative latent factor based methods e.g.,
+        RLFM~\cite{agarwal09},  AFM~\cite{gantner10} by significant margin.
+      %\item \textbf{\AFMI:}
+  \item{\textbf{\RLFMI}}
+        We used the Regression-based Latent Factor Modeling(\RLFM) technique
+        implemented in LibFM~\cite{rendle12libfm} that accounts for inter-feature interactions. We
+        used LibFM with SGD learning to obtain results.
+\end{enumerate}
+
+
+
+
+\subsection{Evaluation Methodology and Metrics}
+For each dataset we split the corresponding user-item preference matrix  $R$ into three
+matrices $R_{train}$, $R_{val}$ and $R_{test}$. $R_{train}$ contains a randomly
+selected $60\%$ of the columns (items) of R, and the remaining columns were divided equally
+among $R_{val}$ and $R_{test}$. Since items in $R_{test}$ and $R_{val}$ are not
+present in $R_{train}$, this allows us to evaluate the methods for item cold-start
+problems as users in $R_{train}$ do not have any preferences for items in
+$R_{test}$ or $R_{val}$. 
+The models are learned using $R_{train}$ and the best model is
+selected based on its performance on the validation set $R_{val}$. The selected model
+is then used to estimate the preferences over all items in $R_{test}$. For each
+user the items are sorted in decreasing order and the first $n$ items are returned
+as the \TOPN recommendations for each user. The evaluation metrics as described
+later are computed using these \TOPN recommendation for each user. 
+
+After creating the train, validation and test split, there might be some users who do
+not have
+any items in the validation or the test split. In that case we evaluate the performance on
+the splits for only those users who have at least one item in the corresponding test split.
+This split-train-evaluate procedure is repeated three times for each dataset and
+the evaluation metric scores are averaged over these runs before being reported in
+results.
+
+We used two metrics to assess the performance of the various methods: Recall at
+$n$ (Rec@n) and Discounted Cumulative Gain at $n$ (DCG@n).
+Given the list of the \TOPN recommended items for user $u$, \RECN measures how
+many of the items liked by $u$ appeared in that list, whereas the \DCGN measures
+how high the relevant items were placed in the list. 
+The \RECN is defined as 
+\begin{equation*}
+  REC@n = \frac{|\{\mbox{Items liked by user}\} \cap \{\mbox{Top-n 
+  items}\}|}{|\mbox{Top-n items}|}
+\end{equation*}
+The \DCGN is defined as
+\begin{equation*}
+  DCG@n= \imp_1 + \sum_{p=2}^{n} \frac{\imp_p}{\log_2(p)},
+\end{equation*} 
+where the $\imp_p$ of the item with rank $p$ in the \TOPN list is
+%
+\begin{equation*}
+\imp_p = \left\{
+  \begin{array}{l l}
+    1/n, & \quad \text{if item at rank $p \in R_{u,test}^+$}\\
+    0, & \quad \text{if item at rank $p \notin R_{u,test}^+$}.
+  \end{array} \right. 
+  \end{equation*} 
+The main difference between \RECN and \DCGN is that \DCGN is sensitive to the rank of the 
+items in the \TOPN list. Both the \RECN and the \DCGN are computed for each user and then 
+averaged over all the users. 
+%
+%We also computed the Precision at $n$ metric (Prec@$n$); however, the ranking of the methods under Prec@$n$ was the same as their ranking under \RECN and for this reason we only report the \RECN values.
+
+\subsection{Model Training} \label{evaluation}
+\CF's model parameters are estimated using training set $R_{train}$ and
+validation set $R_{val}$. After each
+major SGD iteration of Algorithm \ref{alg-bpr} we compute
+the \RECN on validation set and save the current model if current \RECN is 
+better than those computed in previous iterations. The learning process ends when
+the optimization objective converges or no further improvement in validation recall 
+is observed for $10$ major SGD iterations. At the end of learning process we return the model that achieved the best \RECN on
+the validation set.
+
+To estimate the model parameters of $\CF_{bpr}$, we draw samples
+equal to the number of preferences in $R$ for each major SGD iteration. Each sample
+consists of a user, an item preferred by user and an item not preferred by user.
+If a dataset does not contain items not preferred by user then we sample from
+items for which his preference is not known.
+

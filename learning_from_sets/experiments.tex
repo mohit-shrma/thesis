@@ -1,0 +1,188 @@
+\section{Experimental Evaluation} \label{ch:lfs:exp_eval}
+\subsection{Dataset}\label{ch:lfs:evaldata}
+We evaluated the proposed methods on two datasets: (i) the dataset analyzed in
+Section~\ref{ch:lfs:dataset}, which will be referred to as \MLREALSETS, and (ii) a set
+of synthetically generated datasets that
+allow us to assess how well
+the optimization algorithms can estimate accurate models and how their
+accuracy depends on various data characteristics.
+
+The synthetic datasets were derived from the \ML
+20M
+dataset\footnote{https://grouplens.org/datasets/movielens/20m/}~\cite{harper2016movielens}  which
+contains 20 million ratings from approximately 229,060 users on 26,779 movies.
+For experiment purposes, we
+created a synthetic low-rank matrix of rank 5 as follows. 
+%
+We started by generating two matrices
+$A\in\mathbb{R}^{n\times k}$ and $B\in\mathbb{R}^{m\times k}$, where $n$ is
+number of users, $m$ is number of items and $k = 5$, whose values are
+uniformly distributed at random in $[0, 1]$. We then computed the singular value
+decomposition of these matrices to obtain $A=U_A\Sigma_A V_A^T$ and $B=U_B\Sigma_B
+V_B^T$. We then let $P=\alpha U_A$, $Q=\alpha U_B$ and $R = PQ^T$. Thus, the final
+rank $k$ matrix $R$ is obtained as the product of two randomly generated rank $k$
+matrices whose columns are orthogonal. Note that the parameter $\alpha$ was
+determined empirically in order to produce ratings in the range of $[-10, 10]$.
+
+Since we know the complete synthetic low-rank matrix we can generate the rating
+corresponding to an observed user-item pair in the real dataset from the complete
+rating matrix.
+We randomly selected 1000 users without replacement from the dataset and for
+each user we created sets containing five movies. 
+The movies in a user's set
+were selected at random without replacement from the movies rated by that user.
+For each user, we created at least $k$ such sets of movies, where $k \in [40,
+60, 80, 100, 140]$.
+We generated rating for a user on a set by 
+following two approaches: 
+\begin{enumerate}[(i)]  
+  \item \ES-based rating: For each user, we chose one of the
+extremal subsets at random and used that to generate ratings for all the sets.
+The set is assigned an average of the user's ratings on the items in the
+chosen extremal subset of the items in the set. 
+
+  \item  \VO-based rating: For each user, 
+we chose the user's level of pickiness (the $\beta_u$ parameter) at random from the
+range [-2.0, 2.0]. The set is assigned an average of the user's ratings on the items in the set,
+and also we offset this rating by adding a quantity computed by scaling the
+standard deviation of ratings in the set by the randomly chosen user's level of
+pickiness.
+\end{enumerate}
+
+For all these datasets, we added random $\mathcal{N}(0, 0.1)$ Gaussian noise while computing
+ratings at both the item and set-level for the users. 
+For each approach, we generated 15 different synthetic datasets, each
+by varying the user-item latent factors and the users' pickiness.
+
+\iffalse
+We generated five ratings for
+a set as per above approaches by choosing at random five different extremal subsets 
+and pickiness levels for the users. We repeated this procedure three times by
+using a different low rank model and sampling different 1000 users each time, 
+hence creating 3 different synthetic datasets. Hence, giving us fifteen splits
+for data generated using each of the above approach.  We will refer to these datasets
+as \SYNSETSA.
+\fi
+%Various statistics about the set and item ratings are shown in Table~\ref{table:dataset_stats}.
+
+
+%\subsection{Comparison methods}
+%We compared the proposed method against the \MF (MF)~\cite{r43} and the
+%Bayesian Personalized Ranking (BPR)~\cite{r6} methods using the ratings available
+%for the items in the sets.   
+%\footnote{Code for the developed methods and baselines is available at https://sites.google.com/site/lfsicdm16/}
+
+
+\subsection{Evaluation methodology}
+To evaluate the performance of the proposed methods we divided the available
+set-level ratings for each user into training, validation and test splits by randomly
+selecting five set-level ratings for each of the validation and test splits. 
+The validation split was used for model selection.
+In order to assess the performance of the methods for item
+recommendations, we used a test set that contained for each user the items that
+were not present in the user's sets (i.e., these were absent from the training,
+test, and validation splits) but were present in the original user-item rating
+matrix used to generate the sets.
+We used Root Mean Square Error (RMSE) to measure the accuracy of the rating prediction
+over items and sets. 
+
+\subsubsection{Comparison methods}\label{ch:lfs:comp_methods}
+In addition to the evaluation of the proposed methods, i.e., ARM, \ES 
+and \VO, we also present the results for the following non-personalized
+methods:
+\begin{enumerate}[(i)]
+  \item SetAvg: This method predicts a user's ratings on items and sets as the average of the
+    user's ratings on sets. The rating of user $u$ on set $\mathcal{S}$ is given
+    by
+    \begin{equation}
+      \begin{split}
+        \hat{r}_{u}^s &= \frac{1}{|\mathcal{Q}_u|} \sum_{k \in \mathcal{Q}_u} \hat{r}_{uk}, 
+      \end{split}
+    \end{equation}
+  \noindent where $\mathcal{Q}_u$ represents all the sets rated by user $u$. The
+  rating of user $u$ on item $i$ is given by
+  \begin{equation}
+    \begin{split}
+      \hat{r}_{ui} &= \frac{1}{|\mathcal{Q}_u|} \sum_{k \in \mathcal{Q}_u}
+      \hat{r}_{uk},
+    \end{split}
+  \end{equation}
+\noindent where $\mathcal{Q}_u$ represents all the sets rated by user $u$.
+
+  \item Item average: This method estimates the rating for an item as the average of the ratings
+provided by the users on the item. The rating
+$\hat{r_i}$ for an item $i$ is given by
+\begin{equation}
+  \begin{split}
+    \hat{r}_{i} &= \frac{1}{|\mathcal{U}_i|}\sum_{u \in \mathcal{U}_i} r_{ui}, 
+  \end{split}
+\end{equation}
+\noindent where $\mathcal{U}_i$ denotes the set of users who have rated item
+$i$. 
+ 
+
+  \item UserMeanSub: This method estimates the rating for an item as the sum of average rating on
+sets and average of user mean subtracted item ratings.
+The rating
+$\hat{r_i}$ for an item $i$ is given by
+\begin{equation}
+  \begin{split}
+    \hat{r}_{i} &= \mu_s + \frac{1}{|\mathcal{U}_i|}\sum_{u \in \mathcal{U}_i}
+    \big(r_{ui} - \frac{1}{|\mathcal{I}_u|}\sum_{k \in \mathcal{I}_u}r_{uk}\big),
+  \end{split}
+\end{equation} 
+\noindent where $\mu_s$ is the average of the ratings on all the sets, $\mathcal{I}_u$
+represents the set of items rated by user $u$.
+
+\end{enumerate}
+
+In practice, 
+a significant proportion of the ratings provided by users on items
+depends on factors that are associated with either users or items, and do not
+depend on interactions between the users and the items. For example, some users
+have a tendency to rate higher than others, and some items receive higher
+ratings than others. For the real set-level rating dataset, that we obtained from
+\ML users, we determined these factors by estimating user- and
+item-biases~\cite{koren2009matrix} as part of the model learning.
+
+
+%\begin{table}[t]
+%  \centering
+%  \caption{Statistics for ratings available for items in and outside sets.} \label{table:dataset_stats}
+%  \begin{tabular}{|l|c|c|c|}
+%    \hline
+%      &\multicolumn{1}{|p{1cm}|}{\centering ratings}
+%      &\multicolumn{1}{|p{1.5cm}|}{\centering ratings/user}
+%      &\multicolumn{1}{|p{1.5cm}|}{\centering ratings/item} \\ 
+%    \hline
+%    Items in sets & 146,894 & 172.0 & 11.7 \\
+%    Items outside sets & 310,664 & 363.78 & 24 .76 \\
+%  \hline
+%  \end{tabular}
+%\end{table}
+
+
+\iffalse
+We followed the above procedure on all the splits of synthetic datasets
+generated using the approaches described in Section~\ref{ch:lfs:evaldata} and report average value
+of the performance assessment metrics for each of the approaches. 
+Similarly we repeated the above process five times for \MLREALSETS  and report
+the average value of metrics across the runs.  
+\fi
+
+
+
+\subsection{Model selection}
+We performed grid search to tune the dimensions of the latent factors and
+regularization hyper-parameters for the latent factors. 
+We searched
+for regularization weights ($\lambda$) in the range [0.001, 0.01, 0.1, 1, 10],
+$\epsilon$ in the range [0.1, 0.25, 0.5, 1] and $c$ in the range [0, 0.25, 0.50,
+0.75, 0.90] for both the synthetic and the real
+datasets.
+We searched for the dimension of latent factors ($f$) in the range [1, 5, 10,
+15, 25, 50, 75, 100] for real datasets, and used 5 as the dimension
+of latent factors for synthetic datasets.
+The final
+parameters were selected based on the performance on the validation split. 
+
