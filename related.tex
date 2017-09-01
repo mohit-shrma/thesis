@@ -1,6 +1,25 @@
 \chapter{Background and Related Work}
 \label{ch:related}
 
+%============================ General recommendations related work: CF and neighborhood intro =====
+Recommender systems employ different algorithms to generate recommendations. These algorithms fall into
+two different classes: content-based methods~\cite{lops2011content,pazzani2007content} and collaborative filtering-based methods~\cite{herlocker1999algorithmic}. Content-based methods rely on the attributes of the users and the items to generate recommendations. Collaborative filtering-based
+methodsmake use of the user preferences available in the form explicit ratings or implicit feedback. These
+methods utilize the user or item co-rating information to estimate the user preferences over the items.
+Collaborative filtering-based approaches can be further divided into two categories, i.e., neighborhood-based
+methods~\cite{shardanand1995social, konstan1997grouplens, SarwarKarypis01, deshpande2004item} and model-based or latent factor-based methods~\cite{koren2008factorization,Koren2009,koren2010collaborative}.  The neighborhood-based methods learn the user or the
+item neighborhood based on the co-rating information to generate the recommendations.  The model-based approaches
+learn a model, i.e., the user and the item latent factors,  from the rating data and use it to generate the
+recommendations. Next, we will discuss some of the work that is relevant to this thesis.
+
+
+
+
+
+
+
+%============================ Matrix Completion ==================================================
+\paragraph{Matrix Completion}
 The state-of-the-art methods for recommendations are based on matrix
 completion, and most of them involve factorizing the user-item rating
 matrix~\cite{Koren2009, koren2008factorization, hu2008collaborative}.
@@ -39,6 +58,7 @@ In a separate body of work~\cite{CandesTao2010, CandesRecht09}, it has been show
 accurately by matrix completion-based methods, $O(nr \log(n))$ entries should be sampled uniformly at random from the
 matrix.
 
+\iffalse
 In real-world recommendation systems, it is not possible for a user to indicate
 his or her preferences over all the available items thereby leading to missing
 ratings in the user-item rating matrix. There has been some work that assumes
@@ -46,7 +66,7 @@ all ratings are \emph{missing not at random} (MNAR) and models the missing data 
 generated recommendations~\cite{marlin2012collaborative, pan2008one,
 hernandez2014probabilistic, Steck2010MNAR, Steck2013EvalRec, lim2015top,
 KimRecsys2014}.
-\iffalse
+
 However, in our work, we focus on investigating how
 do the missing ratings, i.e., both \emph{missing at random} (MAR) and \emph{missing not at
 random} (MNAR), or specifically how does the presence of few ratings for the
@@ -73,7 +93,7 @@ the number of ratings received by the item.
 
 
 % =============== cold-start ===============================================
-
+\paragraph{Cold-start Item Recommendations}
 The prior work to address the cold-start item recommendation can be divided 
 into \emph{non-collaborative} user personalized models 
 and \emph{collaborative} models. The non-collaborative models generate recommendations 
@@ -136,7 +156,7 @@ analysis~\cite{sun06kdd}, and etc. Bilinear regression models try to exploit the
 correlation between user and item features by capturing the effect of pairwise
 associations between them. Let $\bm{x}_i$ denotes features for user $i$ and $\bm{x}_j$
 denotes features for item $j$, and a parametric bilinear indicator of the
-interaction between them is given by $s_{ij} = \bm{x}_i^TW\bm{x}_j$ where $W$ denotes
+interaction between them is given by $s_{ij} = \bm{x}_iW\bm{x}_j^T$ where $W$ denotes
 the matrix that describes a linear projection from the user feature space onto
 the item feature space. The method was developed for recommending cold-start
 items in the real time scenario, where the item space is small but dynamic
@@ -152,7 +172,7 @@ large, and we need a ranked list of items.
 
 
 % =============== learning from sets =======================================
-
+\paragraph{Learning From Sets of Items}
 There has been little published work on using set-level ratings to improve the
 accuracy of item-level recommendations. The one exception is a recent study in which relative
 preference information on different groups of items was collected during a new user

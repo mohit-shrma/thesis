@@ -37,28 +37,60 @@ true high rated items by the user. Also, we saw that the infrequent items are pr
 
 
 \subsection*{Truncated Matrix Factorization (\TMF)}
-In practice, few item attributes determine a significant portion of the user rating and the leftover portion of the rating is determined by other attributes. The item attributes and the user weights over these attributes are known as the item latent factors and the user latent factors respectively. In this thesis, we showed that in real datasets,  some users or items may not have sufficient ratings to estimate all the user and the item latent factors accurately.
-We developed \TMF, a matrix completion-based method which considers the number of ratings of a user and an item to estimate the user's rating on the item. The exhaustive experiments on real datasets illustrate that the \TMF method outperforms the state-of-the-art \MF method for the task of rating prediction for the users and the items with few ratings.
-
+In practice, few item attributes determine a significant portion of the user rating and the leftover portion
+of the rating is determined by other attributes. The item attributes and the user weights over these attributes
+are known as the item latent factors and the user latent factors respectively. In this thesis, we showed that
+in real datasets,  some users or items may not have sufficient ratings to estimate all the user and the item
+latent factors accurately.
+We developed \TMF, a matrix completion-based method which considers the number of ratings of a user and an
+item to estimate the user's rating on the item. The exhaustive experiments on real datasets illustrate that
+the \TMF method outperforms the state-of-the-art \MF method for the task of rating prediction for the users
+and the items with few ratings.
 
 
 
 \subsection*{\CFEXPB}
-
-
-
+Since we do not have any prior preferences for new items, the standard collaborative filtering methods can
+not be used to recommend the new or \emph{cold-start} items. The non-collaborative methods that rely on
+similarities between the new item and the items preferred by a user in the past can be used for cold-start
+item recommendations. However, these non-collaborative methods ignore the interaction among features and
+consider them independently while computing similarities. In this thesis, we presented \CFEXP (\CF) for
+cold-start item recommendations. \CF captures the interaction among the item features and leverages the
+information available from all the users to recommend new items. 
+The extensive experiments on real dataset show that \CF can perform better than other methods in terms of
+recommendation quality, especially in datasets that have relatively small number of features and a
+considerable number of ratings for existing items.  
 
 
 
 \subsection*{Learning from Sets of Items in Recommender Systems}
-
-
+An additional source of information in recommender systems can be the ratings provided by the users on sets
+of items. For example,  the users can provide ratings on music albums, song playlists, and reading lists. 
+A preference provided by a user on a set of items indicates some information about the user's preference for
+individual items in the set. Additionally, due to privacy concerns, users may not be willing to indicate their
+preferences for individual items but may provide a rating to a set of items as it provides some level of
+information hiding. In this thesis, we have investigated how a user's rating on a set of items relates to
+individual item-level ratings and developed collaborative filtering methods that can use the set-level ratings
+to generate item recommendations. 
+The experiments on the real and the synthetic datasets show that the developed methods can recover the
+characteristics of underlying data and can be used for item recommendations.
 
 
 
 
 
 \section{Future research directions}
+The problems explored and methods presented in this thesis can be further extended in multiple future directions. It will be interesting to investigate the effect of different properties of ratings, e.g., diversity of ratings, in the user-item rating matrix on the performance of the matrix completion-based recommendation methods.
+We can also leverage the derived insight in Section~\ref{ch:tmf:freqanal}, i.e., only fewer dimensions of latent factors are estimated accurately for users or items with few ratings,  to modify
+existing locality-based  matrix completion methods~\cite{lee2013local,
+lee2014local,chen2015wemarec} by using lower ranks for
+the sparse part and higher ranks for the dense part of the user-item rating
+matrix.
+Similar to \TMF, we may be able to improve other latent factor-based methods that may suffer from inaccuracy due to insufficient data, e.g.,  Factorization Machines~\cite{rendle2010factorization,rendle12libfm} and Word2Vec~\cite{mikolov2013distributed}.
+
+Furthermore, we can improve the usage of preferences over sets of items by modeling temporal effects on the ratings and by using side-information like genres or other movie metadata. Also, it will be interesting to investigate if similar to the diversity of ratings in the set there exists other properties at the item- or set-level that can affect a user's ratings on sets of items.
+Moreover, a user may rate the set of items independent of what is his preference for an individual item and instead rate the set depending on how does he perceive the set as a whole. In this scenario, the items in a set can complement each other and thereby receive a more favorable rating from the user. On the contrary, it could be possible that items in a set compete with each other and thus receive a more critical rating on the set. Thus, modeling the synergy and the competition among items in a set can further improve the estimation of the user preferences over sets and items.
+
 
 
 

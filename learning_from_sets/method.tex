@@ -168,7 +168,7 @@ Thus, the estimated
 rating of user $u$ on item $i$, i.e., $\hat{r}_{ui}$, is given by
 \begin{equation} \label{ratPred_eq}
   \begin{split}
-    \hat{r}_{ui} = \bm{p_u}^T\bm{q_i},
+    \hat{r}_{ui} = \bm{p_u}\bm{q_i}^T,
   \end{split}
 \end{equation}
 \noindent where $\bm{p_u} \in \mathbb{R}^f$  is the latent representation of user $u$,
@@ -256,7 +256,7 @@ factors.
         \For {each subset $i \in \mathcal{E}_s$}
           \State $\hat{e}_i \gets 0,\; q_{sum} \in \mathbb{R}^f \gets 0$
           \For {each item $j \in i$}
-            \State $\hat{e}_i \gets \hat{e}_i + p_u^Tq_j, \; q_{sum} \gets q_{sum} + q_j$
+            \State $\hat{e}_i \gets \hat{e}_i + p_uq_j^T, \; q_{sum} \gets q_{sum} + q_j$
             %\State $q_{sum} \gets q_{sum} + q_j$
           \EndFor
           \State $\hat{e}_i \gets \frac{\hat{e}_i}{|i|},\; q_{sum} \gets \frac{q_{sum}}{|i|}$
@@ -321,7 +321,7 @@ factors.
         \State $\bm{q} \in \mathbb{R}^f$  $\gets 0, \;\bm{v} \in \mathbb{R}^f$  $\gets 0$
         \For {each item $i \in \mathcal{S}$ }
           \State $\bm{q} \gets \bm{q} + \bm{q}_i$
-          \State $\bm{v} \gets \bm{v} + (\bm{p}_u^T\bm{q}_i)\bm{q}_i$
+          \State $\bm{v} \gets \bm{v} + (\bm{p}_u\bm{q}_i^T)\bm{q}_i$
         \EndFor
         \State $\nabla p_u \gets \frac{\bm{q}}{|\mathcal{S}|} 
           + \frac{\beta_u \bm{v}}{\hat{\sigma_s}|\mathcal{S}|}
@@ -389,7 +389,7 @@ This optimization problem can be solved by Stochastic Gradient Descent
 
 Note that for the \ES model, we
 need to solve this optimization problem with linear and non-negative constraints
-on user weights $\bm{w_u}^T$. If we know the users' and the items' latent factors
+on user weights $\bm{w_u}$. If we know the users' and the items' latent factors
 then the user weights can be determined by solving the Equation~\ref{eq_obj} as
 a constraint quadratic programming~\cite{boyd2004convex} for each user. 
 We can determine a user's weights by solving multiple quadratic programs, each
