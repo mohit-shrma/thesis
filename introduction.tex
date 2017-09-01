@@ -18,23 +18,14 @@ recommendations based on their
 previously watched movies or tv shows, and mobile app stores (e.g., Apple, Google Play)
 use them to recommend apps to their users.
 
-
-Recommender systems generally use collaborative filtering-based methods to generate
-recommendations and low-rank matrix completion is the state-of-the-art collaborative
-filtering method. However, its accuracy is affected due to the sparsity structure of
-the rating matrices in the real-world datasets and can not be applied as it is in
-certain scenarios, e.g., the recommendation of new items and generating recommendations
-based on their preferences on sets of items. This thesis primarily concentrates on
-three problems in the area of recommender systems. First, we investigate how does
-the accuracy of matrix completion is affected by the skewed distribution of user-item rating
-matrices and based on the derived insights we develop a method that performs better for
-users and items with few ratings. Second, matrix completion-based methods can not be
-applied to recommend new items as they do not have any prior preferences. We will
-develop a method to recommend new items to users based on the item features that will take
-into account the interaction among the item features. Finally, we will investigate how do
-a user's preferences on sets of items relate to his/her preferences over individual items
-and based on the analysis we will introduce collaborative filtering-based methods that can
-be used to recommend items to users.
+Recommender systems generally use collaborative filtering-based methods to generate recommendations
+and low-rank matrix completion is the state-of-the-art collaborative filtering method.
+However, its accuracy is affected due to the sparsity structure of
+the rating matrices in real-world datasets.  Also, standard collaborative filtering methods can not be used for recommendation of new items and to generate recommendations from users' preferences on sets of items.
+In this thesis, we primarily concentrate on three problems in recommender systems. 
+First, we investigate how the accuracy of matrix completion is affected by the skewed distribution of ratings usually found in rating matrices and use the derived insights to develop a method that performs better for users and items with few ratings. 
+Second, collaborative filtering-based methods can not be applied to recommend new items as they do not have any prior preferences. We develop a method to recommend new items to users based on the item features that take into account the interaction among the item features. 
+Finally, we investigate how a user's preferences on sets of items relate to his/her preferences over individual items and introduce collaborative filtering-based methods that can be used to recommend items to users.
 
 %=========================================================================================================
 
@@ -70,7 +61,7 @@ In this thesis (Chapter~\ref{ch:tmf}), we introduce a new method called \TMF
 which considers the number of ratings received by an item or provided by a user to predict the user's rating over the item. 
 
 
-\subsection{\CFEXPB}
+\subsection{\CFEXP}
 Since state-of-the-art collaborative filtering methods rely on prior preferences by users over items to generate recommendations, it is difficult to recommend new items as they do not have any previous preferences associated with them. The new items in recommender systems are often referred to as cold-start items. We can use non-collaborative filtering methods that rely on similarities between the new items and the items preferred by a user in the past to generate cold-start item recommendations. A major drawback of these methods is that they ignore the interactions among the item attributes and consider them independently while computing similarities between the items. The cold-start item recommendations can benefit from capturing the interactions between item features as modeling these interactions may provide additional information towards the significance of the item. 
 
 We will present the method \CFEXPB in Chapter~\ref{ch:bilinear} of this thesis, which leverages all the available information across users to model interactions among features and learns a user personalized bilinear similarity low-rank model for \TOPN recommendation of new items.

@@ -19,13 +19,13 @@ the state-of-the-art matrix completion method for the users and the items in the
 
 Since for new items we do not have any prior preferences from existing users, it is hard
 to recommend these items to the users.  We can use non-collaborative methods that rely
-on similarities between the new item and the items preferred by a user in the past.
+on similarities between the new item and the items preferred by a user in the past to model the user preference for the new item.
 However, these methods consider the item features independently and ignore the
 interactions among the features of the items while computing the similarities. 
 Modeling the interactions among features can provide more information towards the
 relevance of an item in comparison to the scenario when the features are considered
 independently.
-We develop a new method called \CFEXPB (\CF), that uses all available information
+We develop a new method called \CFEXP (\CF), that uses all available information
 across users to capture these interactions among features and learns a \emph{low-rank}
 user personalized \emph{bilinear} similarity model for \TOPN recommendation
 of new items.
@@ -38,12 +38,10 @@ preferences for more items that the number of ratings that the user provided. Mo
 users may have privacy concerns and hence may not be willing to indicate their preferences
 on individual items explicitly but may be willing to provide a rating to a set of items,
 as it provides some level of information hiding.
-We will investigate how do users' item-level preferences relate to their set-level preferences
-and how collaborative filtering-based models can take advantage of set-level preferences
-to generate item recommendations. 
-%We will introduce collaborative filtering-based methods
-%that explicitly model the user behavior of providing ratings on sets of items and can be
-%used to recommend items to users.
+We will investigate how do users' item-level preferences relate to their set-level preferences.
+Also, we will introduce collaborative filtering-based methods
+that explicitly model the user behavior of providing ratings on sets of items and can be
+used to recommend items to users.
 
 
 
