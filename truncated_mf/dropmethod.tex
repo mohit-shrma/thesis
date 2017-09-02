@@ -181,8 +181,8 @@ We will call this method as Truncated Matrix Factorization with Dropout (TMF + D
 
 
 \subsection{Model learning}
-The parameters of the model, i.e., the user and the item latent factors, can be estimated by minimizing a regularized
-square loss between the actual and the predicted ratings 
+The parameters of the model, i.e., the user and the item latent factors, can be estimated by minimizing Equation~\ref{mf_obj} as described in Section~\ref{ch:related}.
+\iffalse
 \begin{equation} \label{mf_drop_obj}
   \begin{aligned}
     \minimize_{\bm{p_u}, \bm{q_i}} & &\frac{1}{2}\sum_{r_{ui} \in R}
@@ -193,6 +193,7 @@ square loss between the actual and the predicted ratings
 \noindent where the parameter $\beta$ controls the Frobenius norm regularization
 of the latent factors to prevent overfitting. This optimization problem can be
 solved by Stochastic Gradient Descent (SGD).
+\fi
 Algorithms~\ref{alg:learntmf}~and~\ref{alg:learntmfd} provides the detailed procedure
 for TMF and TMF + Dropout, respectively. 
 

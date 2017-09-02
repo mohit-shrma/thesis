@@ -28,11 +28,10 @@ investigated three approaches of modeling that.
 \subsubsection*{Average Rating Model (ARM)}
 The first approach assumes that the rating that a user provides
 on a set reflects his/her average rating on all the items in the
-set. Specifically, if the rating of user $u$ on set $\mathcal{S}$ is denoted by $r_{u}^s$,
-then the estimated rating of user $u$ on set $\mathcal{S}$ is given by
+set. Specifically, the estimated rating of user $u$ on set $\mathcal{S}$ is given by
 \begin{equation} \label{avgSetEq}
   \begin{split}
-    \hat{r}_{u}^s &= \frac{1}{|\mathcal{S}|} \sum_{i \in \mathcal{S}} r_{ui}.
+    \rush &= \frac{1}{|\mathcal{S}|} \sum_{i \in \mathcal{S}} r_{ui}.
   \end{split}
 \end{equation}
 \noindent As the analysis in Section~\ref{ch:lfs:dataset} showed, such a model correlates well
@@ -80,10 +79,10 @@ the average rating on all the extremal subsets; for $1 \le i \le
 n_s$, $e_i$ is the average rating of $i$ least rated
 items, for $n_s \le i \le 2n_s - 1 $, $e_i$ is the average rating
 of the $2n_s - i$ highest rated items and $e_{n_s}$ is the average rating of all
-the items in the set. Then $\hat{r}_{u}^s$ is given by
+the items in the set. Then $\rush$ is given by
 \begin{equation} \label{avgbuckacteq}
   \begin{split}
-    \hat{r}_{u}^s &= \sum_{i=1}^{2n_s - 1} w_{u,i} e_{i},
+    \rush &= \sum_{i=1}^{2n_s - 1} w_{u,i} e_{i},
   \end{split}
 \end{equation}
 \noindent where $w_{u,i}$ is a non-negative weight of user $u$ on
@@ -127,12 +126,11 @@ quantity will be positive and large, resulting to the
 set being (severely) over-rated. 
 
  
-If $\beta_u$ denotes the pickiness level of user $u$,
-then the estimated rating on a set is given by
+If $\beta_u$ denotes the pickiness level of user $u$, then the estimated rating on a set is given by
 \begin{equation} \label{varActEq}
   \begin{split}
     %\hat{r}_{u}^s &= \mu_{s} + \beta_u (\sigma_{s} + \epsilon),
-    \hat{r}_{u}^s &= \mu_{s} + \beta_u \sigma_{s},
+    \rush &= \mu_{s} + \beta_u \sigma_{s},
   \end{split}
 \end{equation}
 \noindent where $\mu_{s}$ and $\sigma_{s}$ are the mean and the standard
@@ -158,35 +156,32 @@ deviation of the estimated ratings of items in the set $s$.
 %========================================================
 
 \subsection{Modeling user's ratings on items}
-In order to model a users' ratings on the items, similar to matrix
-factorization method~\cite{koren2009matrix},
-we assume that the underlying user-item rating matrix is low-rank, i.e., there is a low-dimensional latent space in which both the users
-and the items can be compared to each other. 
-The rating of user $u$ on item $i$ can be computed as an inner product of
-the user and the item latent factors in that latent space.
-Thus, the estimated
-rating of user $u$ on item $i$, i.e., $\hat{r}_{ui}$, is given by
-\begin{equation} \label{ratPred_eq}
-  \begin{split}
-    \hat{r}_{ui} = \bm{p_u}\bm{q_i}^T,
-  \end{split}
-\end{equation}
-\noindent where $\bm{p_u} \in \mathbb{R}^f$  is the latent representation of user $u$,
-$\bm{q_i} \in \mathbb{R}^f$ is the latent representation of item $i$ and $f$ is the
-dimensionality of the underlying latent space.
+In order to model a users' ratings on the items, similar to matrix factorization method described in
+Section~\ref{ch:related}, we assume that the underlying user-item rating matrix is low-rank, i.e.,
+there is a low-dimensional latent space in which both the users and the items can be compared to each other. 
+Thus, the estimated rating of user \usru on item \itmi, i.e., \ruih, is given by Equation~\ref{mf_eq}.
+
+%\begin{equation} \label{ratPred_eq}
+%  \begin{split}
+%    \hat{r}_{ui} = \bm{p_u}\bm{q_i}^T,
+%  \end{split}
+%\end{equation}
+%\noindent where $\bm{p_u} \in \mathbb{R}^f$  is the latent representation %of user $u$,
+%$\bm{q_i} \in \mathbb{R}^f$ is the latent representation of item $i$ and $f$ is the
+%dimensionality of the underlying latent space.
 
 
 \subsection{Combining set and item models}
 
 
 Our goal is to estimate the item-level ratings by learning the user and item
-latent factors of Equation~\ref{ratPred_eq}; however, the ratings that we have available
+latent factors of Equation~\ref{mf_eq}; however, the ratings that we have available
 from the users are at the set-level. In order to use the available set-level
 ratings, we need to combine 
-Equation~\ref{ratPred_eq} with
+Equation~\ref{mf_eq} with
 Equations~\ref{avgSetEq},~\ref{avgbuckacteq}~and~\ref{varActEq}. To solve the problem, we assume that the actual
 item-level ratings used in Equations~\ref{avgSetEq},~\ref{avgbuckacteq}~and~\ref{varActEq} correspond to the estimated ratings
-given by Equation~\ref{ratPred_eq}. Hence, the estimated set-level ratings in
+given by Equation~\ref{mf_eq}. Hence, the estimated set-level ratings in
 Equations~\ref{avgSetEq},~\ref{avgbuckacteq}~and~\ref{varActEq}
 are finally expressed in terms of the corresponding user and item latent
 factors.
@@ -205,17 +200,17 @@ factors.
     \While {iter $<$ maxIter or error on validation set decreases}
       \State $\mathcal{R}^s \gets \text{shuffle}(\mathcal{R}^s)$
       \ForAll{$r_{u}^s \in \mathcal{R}^s$}
-        \State $\hat{r}_{u}^s \gets  \frac{1}{|\mathcal{S}|} \sum_{\substack{i
-        \in \mathcal{S}}} \bm{p}_u^T\bm{q}_i$ 
-        \State $e_{u}^s \gets (\hat{r}_{u}^s - r_{u}^s)$
+        \State $\rush \gets  \frac{1}{\setsz} \sum_{\substack{i
+        \in \mathcal{S}}} \bm{p}_u\bm{q}_i^T$ 
+        \State $e_{u}^s \gets (\rush - \rus)$
         \State $\bm{v}_k \in \mathbb{R}^k$  $\gets 0$
         \For {each item $i \in s$ }
         \State $\bm{v}_k \gets \bm{v}_k + \bm{q}_i$
         \EndFor
-        \State $\bm{p}_u \gets \bm{p}_u - \eta(\frac{e_{u}^s}{|s|} \bm{v}_k +
+        \State $\bm{p}_u \gets \bm{p}_u - \eta(\frac{e_{u}^s}{\setsz} \bm{v}_k +
         \lambda \bm{p}_u)$ \Comment{Update user's latent representation}
         \For {each item $i \in s$ }
-          \State $\bm{q}_i \gets \bm{q}_i - \eta(\frac{e_{u}^s}{|s|} \bm{p}_u +
+          \State $\bm{q}_i \gets \bm{q}_i - \eta(\frac{e_{u}^s}{\setsz} \bm{p}_u +
             \lambda \bm{q}_i)$ \Comment{Update item's latent representation} 
         \EndFor
       \EndFor
@@ -245,9 +240,9 @@ factors.
     \While {iter $<$ maxIter or error on validation set decreases}
       \State $\mathcal{R}^s \gets \text{shuffle}(\mathcal{R}^s)$
       \State 
-      \ForAll{$r_{u}^s \in \mathcal{R}^s$}
+      \ForAll{$\rus \in \mathcal{R}^s$}
         
-        \State $\hat{r}_{u}^s \gets 0$
+        \State $\rush \gets 0$
         \State $\mathcal{E}_s \gets \text{All possible extremal subsets
         for set }\mathcal{S}$
         \State         
@@ -261,11 +256,11 @@ factors.
           \EndFor
           \State $\hat{e}_i \gets \frac{\hat{e}_i}{|i|},\; q_{sum} \gets \frac{q_{sum}}{|i|}$
           %\State $q_{sum} \gets \frac{q_{sum}}{|i|}$
-          \State $\hat{r}_{u}^s \gets \hat{r}_{u}^s + w_{u,i}\hat{e}_i$
+          \State $\rush \gets \rush + w_{u,i}\hat{e}_i$
           \State $\nabla p_u \gets \nabla p_u + w_{u,i}q_{sum}$
         \EndFor
         
-        \State $e_{u}^s \gets (\hat{r}_{u}^s - r_{u}^s)$
+        \State $e_{u}^s \gets (\rush - \rus)$
         \State $\nabla p_u \gets 2e_{u}^s\nabla p_u +
         2\lambda p_u$ \Comment{update user's latent representation}
  
@@ -309,13 +304,13 @@ factors.
     \State Init $P$, $Q$ and $\beta$s with random values $\in$ [0,1]
     \While {iter $<$ maxIter or error on validation set decreases}
       \State $\mathcal{R}^s \gets \text{shuffle}(\mathcal{R}^s)$
-      \ForAll{$r_{u}^s \in \mathcal{R}^s$}
+      \ForAll{$\rus \in \mathcal{R}^s$}
         \State $\hat{\mu}_s \gets  \frac{1}{|\mathcal{S}|} \sum_{i \in \mathcal{S}} \bm{p}_u^T\bm{q}_i$ 
         \State $\hat{\sigma}_s \gets  \epsilon + \sqrt{\frac{1}{|\mathcal{S}|} \sum_{i \in
           \mathcal{S}}  (\bm{p}_u^T\bm{q}_i - \hat{\mu}_s)^2}$
-          \State $\hat{r}_u^s \gets \hat{\mu}_s + \beta_u \hat{\sigma}_s$
+          \State $\rush \gets \hat{\mu}_s + \beta_u \hat{\sigma}_s$
 
-        \State $e_{u}^s \gets (\hat{r}_{u}^s - r_{u}^s)$
+        \State $e_{u}^s \gets (\rush - \rus)$
         
 
         \State $\bm{q} \in \mathbb{R}^f$  $\gets 0, \;\bm{v} \in \mathbb{R}^f$  $\gets 0$
@@ -363,14 +358,14 @@ by
 %
 \begin{equation} \label{eq_rmse}
   \mathcal{L}_{rmse}(\Theta) \equiv \sum_{u \in U} \sum_{\substack{s \in
-  \mathcal{R}_{u}^s}} (\hat{r}_{u}^s(\Theta) - r_{u}^s)^2,
+  \mathcal{R}_{u}^s}} (\rush(\Theta) - \rus)^2,
 \end{equation}
 %
 
 
 \noindent where $\Theta$ represents model parameters, $U$ represents all the users, $\mathcal{R}_{u}^s$ contains all the sets rated 
-by user $u$, $r_{u}^s$ is the original rating of user $u$ on set $\mathcal{S}$ 
-and $\hat{r}_{u}^s$ is the estimated rating of user $u$ on set $\mathcal{S}$.
+by user $u$, $\rus$ is the original rating of user $u$ on set $\mathcal{S}$ 
+and $\rush$ is the estimated rating of user $u$ on set $\mathcal{S}$.
 
 To control model complexity, we add regularization of the model parameters
 thereby leading to an optimization process of the following form

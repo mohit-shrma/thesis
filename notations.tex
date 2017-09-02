@@ -3,16 +3,62 @@
 
 
 All vectors are represented by bold lower case letters and they are row vectors (e.g., $\bm{p}, \bm{q}$). 
-The $i$th component of vector $\bm{p}$ is denoted
-by $\bm{p[i]}$. All matrices are represented by upper
-case letters (e.g., $R$, $P$). The $i$th row of a matrix $P$  is represented by $\bm{p_i}$. The ($i$, $j$) entry of matrix $W$ is denoted by
-$w_{i,j}$.
-The predicted rating of user $u$ on item $i$ is denoted by $\hat{r}_{u,i}$.
-We use calligraphic letters to denote sets (e.g., $\mathcal{S}$, $\mathcal{T}$), and the size of a set $\mathcal{S}$ is represented by
-$|\mathcal{S}|$.
+The $i$th component of vector $\bm{p}$ is denoted by $\bm{p[i]}$. All matrices are represented by upper
+case letters (e.g., $R$, $P$). The $i$th row of a matrix $P$  is represented by $\bm{p_i}$.
+The ($i$, $j$) entry of matrix $W$ is denoted by $w_{i,j}$. 
+% The predicted rating of user $u$ on item $i$ is denoted by \ruih.
+We use calligraphic letters to denote sets (e.g., $\mathcal{S}$, $\mathcal{T}$), and the size of
+a set $\mathcal{S}$ is represented by $|\mathcal{S}|$.
 
 
 
+For quick reference, all the important symbols used, along with
+their definition is summarized in Table~\ref{tbl:notations}.
+
+\begin{table}[htb]
+    \begin{center}
+    \caption{Symbols used and definitions.}
+    \label{tbl:notations}
+    \begin{tabular}{
+		@{\hspace{2pt}}l@{\hspace{2pt}} 
+		@{\hspace{2pt}}l@{\hspace{2pt}}
+	}
+	\hline
+	%\toprule
+	%
+	\bf{Symbol}	&	\bf{Definition}	\\
+	%
+	\hline
+	%
+	%\users			&	Set of users.	\\
+	%\items			&	Set of items.	\\
+	\sets               &   Set of items. \\ 
+	\setsz          &   Number of items in set \sets. \\
+	\usru, \itmi	    &	Individual user $u$ and item $i$. \\
+	\nusers, \nitems	&	Number of users and items.\\ % $\nusers = |\users|,\nitems =\items|$. \\
+	\nfactors		&	Number of latent factors.	\\
+	
+	\rmat			&	User-Item Feedback/Rating Matrix, $\rmat \in \mathbb{R}^{\nusers \times \nitems}$. \\
+	\rplusu			&	Set of items for which user \usru has provided feedback	\\
+	\rminusu		&	Set of items for which user \usru has not provided feedback	\\
+	\rui			& 	Rating by user \usru on item \itmi. \\
+	\ruih			& 	Predicted rating for user \usru on item \itmi. \\
+	
+    \rus			& 	Rating by user \usru on set \sets. \\
+	\rush			& 	Predicted rating for user \usru on set \sets. \\
+	
+	\pmat			&	User latent factor matrix, $\pmat \in \mathbb{R}^{\nusers \times \nfactors}$.\\
+	\qmat			&	Item latent factor matrix, $\qmat \in \mathbb{R}^{\nitems \times \nfactors}$.\\
+	
+	\puvec          &   Latent factor of user \usru. \\
+	\qivec          &   Latent factor of item \itmi. \\
+	
+	%	
+	\hline
+	%\bottomrule
+	\end{tabular}
+	\end{center}
+\end{table}
 
 
 

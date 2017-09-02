@@ -20,25 +20,7 @@ we observe only partial entries in the rating matrix. For the task of
 recommendations, we need to complete the matrix by predicting the missing
 ratings and select the unrated items with high predicted ratings as
 recommendations for a user.
-The matrix completion approach~\cite{CandesRecht09} assume that the user-item rating matrix is low
-rank and estimate the missing ratings based on the observed ratings in the matrix.
-The state-of-the-art matrix completion-based collaborative filtering
-methods, e.g., Matrix Factorization (MF)~\cite{Koren2009,
-koren2008factorization, hu2008collaborative}, estimates the rating matrix as
-the product of two low-rank matrices. 
-
-\iffalse
-%An extensive body of work~\cite{Koren2009} has that when such an
-%approach is evaluated on a random held-out subset of the data, it is able to
-%achieve good performance.
-%However, the matrix completion-based low-rank models does not perform well for the task of \TOPN
-%recommendations~\cite{CremonesiKoren10}.
-\fi
-
-Assuming that the user-item rating matrix is low-rank, it was
-shown that in order to accurately recover the underlying low-rank model of a $n
-\times n$ matrix of rank $r$, at least $O(nr \log(n))$ entries in the matrix
-should be sampled uniformly at random~\cite{CandesTao2010, CandesRecht09}.
+The matrix completion-based methods, discussed in Section~\ref{ch:related}, estimate the missing ratings based on the observed ratings in the matrix. These methods require entries in the matrix should be sampled uniformly at random for accurate recovery of the underlying low-rank model.
 However, most real-world rating matrices exhibit a skewed distribution of
 ratings as some users have provided ratings to few items and certain items have
 received few ratings from the users. This skewed distribution may result in

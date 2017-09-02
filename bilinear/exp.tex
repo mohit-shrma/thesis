@@ -21,9 +21,6 @@ and their ratings. The ratings are binarized by treating all ratings greater
 than equal to $3$ as $1$ and ratings below $3$ as $0$. Each is accompanied with a
 description which was used as item's content.
 
-Various statistics about these datasets are shown in Table~\ref{datasets_table}.
-Also comparing the densities of the datasets we can see that the \MLHREXP dataset 
-have significantly higher density than other dataset.
 
 \BX (BX) dataset is extracted from Book Crossing
 data~\cite{ziegler05www} such
@@ -31,6 +28,9 @@ that user has given at least four ratings and each book has received the same
 amount of ratings. Description of these books were collected from Amazon using
 ISBN and were used as item features.
 
+Various statistics about these datasets are shown in Table~\ref{datasets_table}.
+Also comparing the densities of the datasets we can see that the \MLHREXP dataset 
+have significantly higher density than other dataset.
 For the \AMAZON, \CUL and \BX dataset, the words that appear in the item descriptions were
 collected, stop words were removed and the remaining words were stemmed to
 generate the terms that were used as the item features. All words that appear in
@@ -136,7 +136,7 @@ collaborative methods.
         Equation~\ref{eq_est_true} by using \emph{Cosine Similarity} to compute
         similarity between the items.
   \item{\textbf{\CFLINEXP (\CFLIN)}}
-        As mentioned before, this method~\cite{elbadrawy2015} learns personalized user model
+        As mentioned before in Section~\ref{ch:related}, this method~\cite{elbadrawy2015} learns personalized user model
         by using all the past preferences from users across the dataset. It
         outperformed other state of the art collaborative latent factor based methods e.g.,
         RLFM~\cite{agarwal09},  AFM~\cite{gantner10} by significant margin.

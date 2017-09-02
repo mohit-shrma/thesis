@@ -21,42 +21,42 @@ recommendations. Next, we will discuss some of the work that is relevant to this
 %============================ Matrix Completion ==================================================
 \paragraph{Matrix Completion}
 The state-of-the-art methods for recommendations are based on matrix
-completion, and most of them involve factorizing the user-item rating
+completion~\cite{CandesRecht09}, and most of them involve factorizing the user-item rating
 matrix~\cite{Koren2009, koren2008factorization, hu2008collaborative}.
 %In this work, our focus is on analyzing the performance of the matrix
 %factorization-based matrix completion approach. 
 The \MF (MF) method assume that the
 user-item rating matrix is low-rank and can be computed as a product of two
 matrices known as the user and the item latent factors. 
-If for a user $u$, the vector $\bm{p_u} \in \mathbb{R}^f$ denotes the $f$ dimensional
-user's latent factor and similarly for the item $i$, the vector 
-$\bm{q_i} \in \mathbb{R}^f$ represents the $f$ dimensional item's latent factor, then the
-predicted rating for the user $u$ on the item $i$, i.e., $\hat{r}_{u,i}$ is given by
+%
+%If for a user $u$, the vector $\bm{p_u} \in \mathbb{R}^f$ denotes the $f$ dimensional
+%user's latent factor and similarly for the item $i$, the vector 
+%$\bm{q_i} \in \mathbb{R}^f$ represents the $f$ dimensional item's latent factor, then the
+%predicted rating for the user $u$ on the item $i$, i.e., $\hat{r}_{u,i}$ is given by
+%
+The predicted rating for the user \usru on the item \itmi is given by
 
 \begin{equation} \label{mf_eq}
   \begin{split}
-    \hat{r}_{u,i} = \bm{p_u}\bm{q_i}^T.
+    \ruih = \bm{p_u}\bm{q_i}^T.
   \end{split}
 \end{equation}
-
 
 The user and the item latent factors are estimated by minimizing a regularized
 square loss between the actual and predicted ratings 
 \begin{equation} \label{mf_obj}
   \begin{aligned}
     \minimize_{P, Q} & &\frac{1}{2}\sum_{r_{ui} \in R}
-    \left(r_{ui} - \bm{p}_u\bm{q}_i^T \right)^2+ \frac{\beta}{2}
+    \left(r_{ui} - \ruih \right)^2+ \frac{\beta}{2}
     \left(||P||_F^2 + ||Q||_F^2 \right),
   \end{aligned}
 \end{equation}
-where the matrices $P \in \mathbb{R}^{m \times f}$ and $Q \in\mathbb{R}^{n \times f}$ 
-contains latent factors of the users and the items
-respectively. The parameter $\beta$ controls the Frobenius norm regularization
-of the latent factors to prevent overfitting.
+where the matrices $\pmat \in \mathbb{R}^{\nusers \times \nfactors}$ and $\qmat \in \mathbb{R}^{\nitems \times \nfactors}$ 
+contains latent factors of the users and the items respectively. The parameter
+$\beta$ controls the Frobenius norm regularization of the latent factors to prevent overfitting. This optimization problem can be solved by Stochastic Gradient Descent (SGD)~\cite{bottou2010large}.
 
 In a separate body of work~\cite{CandesTao2010, CandesRecht09}, it has been shown that in order to complete a $n \times n$ matrix of rank $r$
-accurately by matrix completion-based methods, $O(nr \log(n))$ entries should be sampled uniformly at random from the
-matrix.
+accurately by matrix completion-based methods, $O(nr \log(n))$ entries should be sampled uniformly at random from the matrix.
 
 \iffalse
 In real-world recommendation systems, it is not possible for a user to indicate
@@ -101,6 +101,8 @@ using only the user's past
 interaction history and the collaborative models combine information from
 the preferences of different users. 
 
+
+
 Billsus and Pazzani~\cite{billsus99} developed one of the first user-modeling
 approaches to identify relevant new items. In this approach they used the users'
 past preferences to build user-specific models to classify new items
@@ -136,6 +138,7 @@ to their latent feature representation.
 %can add that AFM performance degrades on using high dimensional features as
 %reported in Asmaa's paper
 
+\iffalse
 \CFLINEXP (\CFLIN)~\cite{elbadrawy2015} learns a personalized user
 model by using historical preferences from all users across the dataset. In
 this model for each user an item similarity function is learned, which is a
@@ -144,6 +147,25 @@ linear combination of user-independent similarity functions known as
 functions, for each user a personalized linear combination of these global
 similarity functions is learned. It is shown to outperform both RLFM and AFM
 methods in cold-start \TOPN item recommendations.
+\fi
+
+%Over the years, a number of approaches have been developed towards solving the
+%item cold-start problem ~\cite{r1,agarwal09,r10} that exploit the
+%features of the new items and the features of
+%the items on which a user has previously expressed his interest. 
+
+A recently introduced approach, which was shown to outperform both RLFM and AFM
+methods in cold-start \TOPN item recommendations is the \CFLINEXP (\CFLIN)~\cite{elbadrawy2015}.
+In this approach, a linear similarity function is estimated for each user that
+depends entirely on features of the items previously liked by the user, which is
+then used to compute a score indicating how relevant a new item will be for that
+user. In order to leverage information across users (i.e., the transfer learning
+component that is a key component of collaborative filtering), each user
+specific similarity function is computed as a linear combination of a small
+number of \emph{global} linear similarity functions that are shared across
+users. Moreover, due to the way that it computes the preference scores, it can
+achieve a high-degree of personalization while using only a very small number of
+global linear similarity functions.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

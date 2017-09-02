@@ -9,9 +9,9 @@
     \centering
     \begin{tabular}{ p{1.5cm}p{1.2cm}p{1cm}p{1cm}p{1.5cm}p{1cm}p{1cm} }
       \hline
-      \multicolumn{1}{c}{\textbf{Method}} &
-      \multicolumn{3}{c}{\textbf{\CULEXP}} &
-      \multicolumn{3}{c}{\textbf{\MLHR}} \\
+      \multicolumn{1}{c}{{Method}} &
+      \multicolumn{3}{c}{{\CULEXP}} &
+      \multicolumn{3}{c}{{\MLHR}} \\
       %\hline
       \multicolumn{1}{c}{} &
       \multicolumn{1}{c}{Params} &
@@ -52,8 +52,8 @@
       \hline
       \\
       \multicolumn{1}{c}{} &
-      \multicolumn{3}{c}{\textbf{\AMAZON}} & 
-      \multicolumn{3}{c}{\textbf{\BX}} \\ 
+      \multicolumn{3}{c}{{\AMAZON}} & 
+      \multicolumn{3}{c}{{\BX}} \\ 
       \hline
       %\multicolumn{1}{|c|}{} &
       %\multicolumn{1}{|c|}{Params} &
@@ -164,14 +164,13 @@ hence \CF takes advantage of availability of more data while $\CFLIN$ fails to d
 
 
 %================================================================================
-\begin{table*}[bt]
+\begin{table*}[bt]\footnotesize
   \centering
   \caption{User level investigation for datasets}\label{USER_INV}
   \begin{tabular}{ p{2.2cm} p{2cm} c c p{2.0cm} p{2.0cm} }
     \hline
-    \textbf{Dataset} &\textbf{$\CF$ against $\CFLIN$} & \textbf{users} &
-      \textbf{items} & \textbf{average user preferences} & \textbf{average item
-  preferences} \\ 
+    {Dataset} &{$\CF$ against $\CFLIN$} & {users} &
+      {items} & {average user preferences} & {average item  preferences} \\ 
     \hline
     \multirow{3}{*}{\MLHR} & BETTER & 897 & 5791 & 348 & 54 \\ 
                              & SAME & 1149 & 5526 & 154 & 32 \\ 
@@ -216,7 +215,7 @@ function to achieve the best performance on \MLHR.
 
 %TODO: write tentative explainations
 
-\begin{table*}[hbt]%\footnotesize
+\begin{table*}[hbt]\footnotesize
   \centering
   \caption {Effect of increasing number of global similarity functions}
   \label{table_global_sim_funcs}
@@ -226,10 +225,10 @@ function to achieve the best performance on \MLHR.
       \hline
       %\multicolumn{1}{|p{3cm}|}{\textbf{No. of Global \\Similarity Functions}} &
       \multicolumn{1}{p{2cm}}{\centering No. of Global \\ Similarity Functions} &
-      \multicolumn{2}{c}{\textbf{\CULEXP}} &
-      \multicolumn{2}{c}{\textbf{\MLHR}} &
-      \multicolumn{2}{c}{\textbf{\AMAZON}} &
-      \multicolumn{2}{c}{\textbf{\BX}} \\
+      \multicolumn{2}{c}{{\CULEXP}} &
+      \multicolumn{2}{c}{{\MLHR}} &
+      \multicolumn{2}{c}{{\AMAZON}} &
+      \multicolumn{2}{c}{{\BX}} \\
       \hline
       \multicolumn{1}{c}{} &
       \multicolumn{1}{c}{Rec@10} &
@@ -267,7 +266,7 @@ For all datasets smaller dimension of feature's factor are enough to achieve the
 performance; however, it may use multiple global similarity functions for the
 same. 
 
-\begin{table*}[hbt]%\footnotesize
+\begin{table*}[hbt]\footnotesize
   \centering
   \caption {Effect of increasing the dimension of feature's factor}
   \label{table_feature_fac_dim}
@@ -276,10 +275,10 @@ same.
     \begin{tabular}{p{1cm}p{1cm}p{1.2cm}p{1cm}p{1.2cm}p{1cm}p{1.2cm}p{1cm}p{1.2cm}}
       \hline
       \multicolumn{1}{p{2cm}}{\centering Dimension of \\ feature's factor} &
-      \multicolumn{2}{c}{\textbf{\CULEXP}} &
-      \multicolumn{2}{c}{\textbf{\MLHR}} &
-      \multicolumn{2}{c}{\textbf{\AMAZON}} &
-      \multicolumn{2}{c}{\textbf{\BX}} \\
+      \multicolumn{2}{c}{{\CULEXP}} &
+      \multicolumn{2}{c}{{\MLHR}} &
+      \multicolumn{2}{c}{{\AMAZON}} &
+      \multicolumn{2}{c}{{\BX}} \\
       \hline
       \multicolumn{1}{c}{} &
       \multicolumn{1}{c}{Rec@10} &
@@ -322,7 +321,7 @@ occur together for items and found that the frequency of these feature
 pairs' co-occurrence is small and that is the reason why a linear model (\CFLIN) fails to capture
 the interaction between these pairs, whereas a bilinear model (\CF) performs better.
 
-\begin{table*}[hbt]%\footnotesize
+\begin{table*}[hbt]\footnotesize
   \centering
   \caption {Significant feature pairs}
   \label{table_feat_interac}
@@ -331,12 +330,13 @@ the interaction between these pairs, whereas a bilinear model (\CF) performs bet
     \begin{tabular}{p{2cm}p{2cm}cp{2cm}p{2cm}c}
       \hline
       %\multicolumn{1}{|p{3cm}|}{\textbf{No. of Global \\Similarity Functions}} &
-       \textbf{Feature 1} &
-       \textbf{Feature 2} & 
-       \textbf{Recall change(\%)} &
-       \textbf{Feature 1} &
-       \textbf{Feature 2} & 
-       \textbf{Recall change(\%)} \\
+       Feature 1 &
+       Feature 2 & 
+       \multicolumn{1}{p{1.85cm}}{\centering Recall change(\%)} &
+       Feature 1 &
+       Feature 2 &
+       \multicolumn{1}{p{1.85cm}}{\centering Recall change(\%)}\\
+       %\textbf{Recall change(\%)} \\
       \hline
       Drama & IMAX & -28.672& Crime & IMAX & 2.485\\
       Children & Drama & -19.790  & Animation & Fantasy & 2.488\\

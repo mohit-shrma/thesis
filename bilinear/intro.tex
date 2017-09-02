@@ -21,21 +21,7 @@ not depend on historical preferences.
 %inventory and can be used for recommender systems in absence of historical records
 %on the interactions among users and these items.
 
-Over the years, a number of approaches have been developed towards solving the
-item cold-start problem ~\cite{r1,agarwal09,r10} that exploit the
-features of the new items and the features of
-the items on which a user has previously expressed his interest. A recently introduced approach, which
-was shown to outperform other approaches is the \CFLINEXP (\CFLIN)~\cite{r42}.
-In this approach, a linear similarity function is estimated for each user that
-depends entirely on features of the items previously liked by the user, which is
-then used to compute a score indicating how relevant a new item will be for that
-user. In order to leverage information across users (i.e., the transfer learning
-component that is a key component of collaborative filtering), each user
-specific similarity function is computed as a linear combination of a small
-number of \emph{global} linear similarity functions that are shared across
-users. Moreover, due to the way that it computes the preference scores, it can
-achieve a high-degree of personalization while using only a very small number of
-global linear similarity functions.
+
 
 
 
@@ -47,7 +33,8 @@ factor methods don't perform well when sparsity of dataset grows, i.e., items ha
 \fi
 
 %cite some references
-In this work we extend \CFLIN in order to account for interactions between the
+In this work, we extend \CFLIN, previously described in Section~\ref{ch:related}, 
+in order to account for interactions between the
 different item features. We believe that such interactions are
 important and quite common. For example, in an e-commerce website, the items
 that users tend to buy are often designed to go well with previously purchased
